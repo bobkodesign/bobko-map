@@ -52,8 +52,10 @@ h1 { text-align: center; font-size: 28px; color: #3b1f0e; margin-bottom: 8px; }
 .store-item.active .store-name { color: #fff; }
 .store-item.active .store-addr { color: #e8cba8; }
 .store-item.active .store-brand { background: rgba(255,255,255,0.25); color: #fff !important; }
+.store-item.active .store-dist { color: #e8cba8; }
 .store-name { font-size: 14px; font-weight: bold; color: #222; margin-bottom: 4px; }
 .store-addr { font-size: 12px; color: #777; line-height: 1.5; }
+.store-dist { font-size: 11px; color: #8B5C2A; font-weight: bold; margin-top: 4px; }
 .store-brand {
   display: inline-block; font-size: 11px; padding: 2px 8px;
   border-radius: 10px; margin-bottom: 4px; font-weight: bold;
@@ -111,6 +113,12 @@ const BRAND_COLORS = {
 
 const UNJUNG = { lat: 37.7074, lng: 126.7491 };
 
+let map, markers = [], activeIdx = -1, filteredStores = [];
+let selectedBrand = '';
+let userLat = null, userLng = null;
+let userMarker = null;
+let storeCoords = [];
+
 function getBrandClass(brand) {
   if (brand.includes('찜닭')) return 'brand-찜닭';
   if (brand.includes('콩불')) return 'brand-콩불';
@@ -118,8 +126,19 @@ function getBrandClass(brand) {
   return 'brand-기타';
 }
 
-let map, markers = [], activeIdx = -1, filteredStores = [];
-let selectedBrand = '';
+function calcDist(lat1, lng1, lat2, lng2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat/2)*Math.sin(dLat/2) +
+            Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*
+            Math.sin(dLng/2)*Math.sin(dLng/2);
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+function formatDist(km) {
+  return km < 1 ? Math.round(km*1000) + 'm' : km.toFixed(1) + 'km';
+}
 
 function initMap(lat, lng, zoom) {
   map = new naver.maps.Map('map', {
@@ -128,79 +147,150 @@ function initMap(lat, lng, zoom) {
   });
 }
 
+function showUserMarker(lat, lng) {
+  if (userMarker) userMarker.setMap(null);
+  userMarker = new naver.maps.Marker({
+    position: new naver.maps.LatLng(lat, lng),
+    map: map,
+    icon: {
+      content: '<div style="width:16px;height:16px;background:#1a73e8;border:3px solid #fff;border-radius:50%;box-shadow:0 0 0 3px rgba(26,115,232,0.3);"></div>',
+      anchor: new naver.maps.Point(8, 8)
+    },
+    zIndex: 999
+  });
+}
+
 function startMap() {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       function(pos) {
-        initMap(pos.coords.latitude, pos.coords.longitude, 14);
-        loadStores();
+        userLat = pos.coords.latitude;
+        userLng = pos.coords.longitude;
+        initMap(userLat, userLng, 14);
+        showUserMarker(userLat, userLng);
+        loadStores(true);
       },
       function() {
         initMap(UNJUNG.lat, UNJUNG.lng, 15);
-        loadStores();
+        loadStores(false);
       },
       { timeout: 5000 }
     );
   } else {
     initMap(UNJUNG.lat, UNJUNG.lng, 15);
-    loadStores();
+    loadStores(false);
   }
 }
 
-function loadStores() {
+function loadStores(hasLocation) {
   filteredStores = [...STORES];
-  renderList(filteredStores);
-  geocodeAndMark(filteredStores);
+  geocodeAll(filteredStores, hasLocation);
 }
 
-function geocodeAndMark(stores) {
+function geocodeAll(stores, sortByDist) {
   markers.forEach(m => m && m.setMap(null));
   markers = new Array(stores.length);
+  storeCoords = new Array(stores.length);
+  let resolved = 0;
+
   stores.forEach((store, i) => {
     naver.maps.Service.geocode({ query: store.address }, function(status, res) {
-      if (status !== naver.maps.Service.Status.OK) return;
-      const item = res.v2.addresses[0];
-      if (!item) return;
-      const pos = new naver.maps.LatLng(parseFloat(item.y), parseFloat(item.x));
-      const color = BRAND_COLORS[store.brand] || '#8B5C2A';
-      const shortName = store.name.replace('밥꼬찜닭 ', '').replace('밥꼬콩불 ', '').replace('먹짱국물두루치기 ', '');
-      const marker = new naver.maps.Marker({
-        position: pos, map: map, title: store.name,
-        icon: {
-          content: `<div style="background:${color};color:#fff;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:bold;white-space:nowrap;box-shadow:0 2px 4px rgba(0,0,0,0.3);">${shortName}</div>`,
-          anchor: new naver.maps.Point(0, 20)
+      resolved++;
+      if (status === naver.maps.Service.Status.OK && res.v2.addresses[0]) {
+        const item = res.v2.addresses[0];
+        const lat = parseFloat(item.y);
+        const lng = parseFloat(item.x);
+        storeCoords[i] = { lat, lng };
+        const pos = new naver.maps.LatLng(lat, lng);
+        const color = BRAND_COLORS[store.brand] || '#8B5C2A';
+        const shortName = store.name.replace('밥꼬찜닭 ','').replace('밥꼬콩불 ','').replace('먹짱국물두루치기 ','');
+        const marker = new naver.maps.Marker({
+          position: pos, map: map, title: store.name,
+          icon: {
+            content: `<div style="background:${color};color:#fff;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:bold;white-space:nowrap;box-shadow:0 2px 4px rgba(0,0,0,0.3);">${shortName}</div>`,
+            anchor: new naver.maps.Point(0, 20)
+          }
+        });
+        naver.maps.Event.addListener(marker, 'click', () => selectStoreByOriginalIdx(i));
+        markers[i] = marker;
+      }
+
+      if (resolved === stores.length) {
+        if (sortByDist && userLat !== null) {
+          renderListWithDist(stores);
+          focusNearest(stores);
+        } else {
+          renderList(stores);
         }
-      });
-      naver.maps.Event.addListener(marker, 'click', () => selectStore(i));
-      markers[i] = marker;
+      }
     });
   });
 }
 
+function renderListWithDist(stores) {
+  const withDist = stores.map((s, i) => {
+    const coord = storeCoords[i];
+    const dist = coord ? calcDist(userLat, userLng, coord.lat, coord.lng) : 99999;
+    return { ...s, origIdx: i, dist };
+  });
+  withDist.sort((a, b) => a.dist - b.dist);
+
+  document.getElementById('list-header').textContent = '가까운 순 ' + withDist.length + '개 매장';
+  const el = document.getElementById('store-list');
+  el.innerHTML = withDist.map((s, i) => `
+    <div class="store-item" id="item-${i}" onclick="selectStoreByOriginalIdx(${s.origIdx})">
+      <span class="store-brand ${getBrandClass(s.brand)}">${s.brand}</span>
+      <div class="store-name">${s.name}</div>
+      <div class="store-addr">${s.address}</div>
+      <div class="store-dist">내 위치에서 ${formatDist(s.dist)}</div>
+    </div>`).join('');
+}
+
+function focusNearest(stores) {
+  let minDist = 99999, nearestIdx = -1;
+  stores.forEach((s, i) => {
+    const coord = storeCoords[i];
+    if (!coord) return;
+    const dist = calcDist(userLat, userLng, coord.lat, coord.lng);
+    if (dist < minDist) { minDist = dist; nearestIdx = i; }
+  });
+  if (nearestIdx >= 0 && markers[nearestIdx]) {
+    map.setCenter(markers[nearestIdx].getPosition());
+    map.setZoom(14);
+  }
+}
+
 function renderList(stores) {
-  document.getElementById('list-header').textContent = '총 ' + stores.length + '개 매장';
+  document.getElementById('list-header').textContent = '전체 ' + stores.length + '개 매장';
   const el = document.getElementById('store-list');
   if (stores.length === 0) {
     el.innerHTML = '<div class="no-result">검색 결과가 없습니다.</div>';
     return;
   }
   el.innerHTML = stores.map((s, i) => `
-    <div class="store-item" id="item-${i}" onclick="selectStore(${i})">
+    <div class="store-item" id="item-${i}" onclick="selectStoreByOriginalIdx(${i})">
       <span class="store-brand ${getBrandClass(s.brand)}">${s.brand}</span>
       <div class="store-name">${s.name}</div>
       <div class="store-addr">${s.address}</div>
     </div>`).join('');
 }
 
-function selectStore(i) {
+function selectStoreByOriginalIdx(origIdx) {
   if (activeIdx >= 0) {
     const prev = document.getElementById('item-' + activeIdx);
     if (prev) prev.classList.remove('active');
   }
-  activeIdx = i;
-  const el = document.getElementById('item-' + i);
-  if (el) { el.classList.add('active'); el.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
-  if (markers[i]) { map.setCenter(markers[i].getPosition()); map.setZoom(15); }
+  const listItems = document.querySelectorAll('.store-item');
+  let listIdx = -1;
+  listItems.forEach((el, i) => {
+    if (el.getAttribute('onclick').includes('(' + origIdx + ')')) listIdx = i;
+  });
+  activeIdx = listIdx;
+  if (listIdx >= 0) {
+    const el = document.getElementById('item-' + listIdx);
+    if (el) { el.classList.add('active'); el.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+  }
+  if (markers[origIdx]) { map.setCenter(markers[origIdx].getPosition()); map.setZoom(15); }
 }
 
 function selectBrand(brand) {
@@ -234,9 +324,7 @@ function search() {
     return true;
   });
   activeIdx = -1;
-  renderList(filteredStores);
-  geocodeAndMark(filteredStores);
-  if (filteredStores.length > 0 && filteredStores.length < 20) setTimeout(() => selectStore(0), 1500);
+  geocodeAll(filteredStores, userLat !== null);
 }
 
 window.onload = function() {

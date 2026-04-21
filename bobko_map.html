@@ -72,17 +72,40 @@ h1 { text-align: center; font-size: 24px; color: #3b1f0e; margin-bottom: 6px; }
   border-right: 1px solid #eee;
   flex-shrink: 0;
 }
-.list-header { padding: 10px 14px; background: #f8f5f0; border-bottom: 1px solid #eee; font-size: 13px; color: #666; }
+.list-header {
+  padding: 10px 14px;
+  background: #f8f5f0;
+  border-bottom: 1px solid #eee;
+  font-size: 13px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.loc-badge {
+  background: #1a73e8; color: #fff;
+  font-size: 11px; padding: 2px 7px; border-radius: 10px;
+  font-weight: bold;
+}
 .store-item {
   padding: 12px 14px; border-bottom: 1px solid #f0f0f0;
-  cursor: pointer; transition: background 0.15s;
+  cursor: pointer; transition: background 0.15s; position: relative;
 }
 .store-item:hover { background: #fdf6ec; }
 .store-item.active { background: #8B5C2A; }
 .store-item.active .store-name { color: #fff; }
 .store-item.active .store-addr { color: #e8cba8; }
 .store-item.active .store-brand { background: rgba(255,255,255,0.25); color: #fff !important; }
-.store-item.active .store-dist { color: #e8cba8; }
+.store-item.active .store-dist { color: #ffe0b2; }
+.store-item.nearest-badge::before {
+  content: '★ 가장 가까운 매장';
+  display: block;
+  font-size: 11px;
+  color: #1a73e8;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+.store-item.active.nearest-badge::before { color: #90caf9; }
 .store-name { font-size: 13px; font-weight: bold; color: #222; margin-bottom: 3px; }
 .store-addr { font-size: 12px; color: #777; line-height: 1.4; }
 .store-dist { font-size: 11px; color: #8B5C2A; font-weight: bold; margin-top: 3px; }
@@ -133,15 +156,18 @@ h1 { text-align: center; font-size: 24px; color: #3b1f0e; margin-bottom: 6px; }
 <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=hvtb0pwl1l&submodules=geocoder"></script>
 <script>
 const STORES = [{"name": "밥꼬찜닭 문산점", "address": "경기 파주시 문산읍 문향로67번길 15", "brand": "밥꼬찜닭", "sido": "경기", "sigungu": "파주시"}, {"name": "밥꼬찜닭 금촌점", "address": "경기도 파주시 번영로 38", "brand": "밥꼬찜닭", "sido": "경기", "sigungu": "파주시"}, {"name": "밥꼬찜닭 운정점", "address": "경기 파주시 산내로104번길 21-3", "brand": "밥꼬찜닭", "sido": "경기", "sigungu": "파주시"}, {"name": "밥꼬찜닭 김포점", "address": "경기 김포시 김포한강2로24번길 78-91", "brand": "밥꼬찜닭", "sido": "경기", "sigungu": "김포시"}, {"name": "밥꼬찜닭 공릉점", "address": "서울특별시 노원구 동일로178길 15", "brand": "밥꼬찜닭", "sido": "서울특별시", "sigungu": "노원구"}, {"name": "밥꼬찜닭 김해북부점", "address": "경상남도 김해시 삼계로51번길 20", "brand": "밥꼬찜닭", "sido": "경남", "sigungu": "김해시"}, {"name": "밥꼬콩불 양산점", "address": "경상남도 양산시 물금읍 삽량로 36", "brand": "밥꼬콩불", "sido": "경남", "sigungu": "양산시"}, {"name": "밥꼬찜닭 부산덕천점", "address": "부산광역시 북구 의성로115번길 22", "brand": "밥꼬찜닭", "sido": "부산광역시", "sigungu": "북구"}, {"name": "밥꼬콩불 부산기장점", "address": "부산광역시 기장군 기장읍 차성로326번길 11", "brand": "밥꼬콩불", "sido": "부산광역시", "sigungu": "기장군"}, {"name": "밥꼬찜닭 수원장안점", "address": "경기도 수원시 장안구 파장천로19번길 18-10", "brand": "밥꼬찜닭", "sido": "경기", "sigungu": "수원시"}, {"name": "밥꼬찜닭 순천점", "address": "전라남도 순천시 장평로 60", "brand": "밥꼬찜닭", "sido": "전남", "sigungu": "순천시"}, {"name": "밥꼬찜닭 김천2점", "address": "경상북도 김천시 평화5길 7", "brand": "밥꼬찜닭", "sido": "경북", "sigungu": "김천시"}, {"name": "밥꼬콩불 목포남악2점", "address": "전라남도 무안군 삼향읍 남악4로34번길 31", "brand": "밥꼬콩불", "sido": "전남", "sigungu": "무안군"}, {"name": "밥꼬콩불 창원북면점", "address": "경상남도 창원시 의창구 북면 감계로 266", "brand": "밥꼬콩불", "sido": "경남", "sigungu": "창원시"}, {"name": "밥꼬콩불 목포하당점", "address": "전라남도 목포시 비파로 73", "brand": "밥꼬콩불", "sido": "전남", "sigungu": "목포시"}, {"name": "밥꼬콩불 김해진영점", "address": "경상남도 김해시 진영읍 진영로 223-2", "brand": "밥꼬콩불", "sido": "경남", "sigungu": "김해시"}, {"name": "밥꼬콩불 무안점", "address": "전라남도 무안군 무안읍 창포로 44-7", "brand": "밥꼬콩불", "sido": "전남", "sigungu": "무안군"}, {"name": "밥꼬찜닭 김포고촌점", "address": "경기도 김포시 고촌읍 은행영사정로 9", "brand": "밥꼬찜닭", "sido": "경기", "sigungu": "김포시"}, {"name": "밥꼬찜닭&콩불 대전월평점", "address": "대전광역시 서구 월평로 15", "brand": "밥꼬콩불", "sido": "대전광역시", "sigungu": "서구"}, {"name": "밥꼬찜닭&콩불 호서대점", "address": "충청남도 아산시 배방읍 호서로 79번길 6", "brand": "밥꼬콩불", "sido": "충남", "sigungu": "아산시"}, {"name": "밥꼬콩불 평택안중점", "address": "경기도 평택시 안중읍 안현로서9길 89", "brand": "밥꼬콩불", "sido": "경기", "sigungu": "평택시"}, {"name": "밥꼬콩불 연천전곡점", "address": "경기도 연천군 전곡읍 은전로 75-13", "brand": "밥꼬콩불", "sido": "경기", "sigungu": "연천군"}, {"name": "밥꼬콩불 울산온산점", "address": "울산광역시 울주군 온산읍 온덕4길 11", "brand": "밥꼬콩불", "sido": "울산광역시", "sigungu": "울주군"}, {"name": "밥꼬콩불 속초점", "address": "강원특별자치도 속초시 미시령로 3361", "brand": "밥꼬콩불", "sido": "강원", "sigungu": "속초시"}, {"name": "밥꼬콩불 충북혁신점", "address": "충청북도 음성군 맹동면 두레로 23", "brand": "밥꼬콩불", "sido": "충북", "sigungu": "음성군"}, {"name": "밥꼬콩불 권선세류점", "address": "경기도 수원시 권선구 정조로482번길 20", "brand": "밥꼬콩불", "sido": "경기", "sigungu": "수원시"}, {"name": "밥꼬콩불 창원의창점", "address": "경상남도 창원시 의창구 원이대로69번길 6-18", "brand": "밥꼬콩불", "sido": "경남", "sigungu": "창원시"}, {"name": "밥꼬콩불 조치원점", "address": "세종특별자치시 조치원읍 조치원3길 36", "brand": "밥꼬콩불", "sido": "세종특별자치시", "sigungu": "조치원"}, {"name": "밥꼬콩불 광주용봉2점", "address": "광주광역시 북구 용주로 30번길100", "brand": "밥꼬콩불", "sido": "광주광역시", "sigungu": "북구"}, {"name": "밥꼬콩불 세종2점", "address": "세종특별자치시 세종로 1234-16", "brand": "밥꼬콩불", "sido": "세종특별자치시", "sigungu": "세종로"}, {"name": "밥꼬찜닭 진주호탄2점", "address": "경상남도 진주시 호탄길27번길 4-1", "brand": "밥꼬찜닭", "sido": "경남", "sigungu": "진주시"}, {"name": "밥꼬콩불 인천용현2점", "address": "인천광역시 미추홀구 독배로421번길 5", "brand": "밥꼬콩불", "sido": "인천광역시", "sigungu": "미추홀구"}, {"name": "밥꼬찜닭&콩불 영등포점", "address": "서울특별시 영등포구 영신로43길 7", "brand": "밥꼬콩불", "sido": "서울특별시", "sigungu": "영등포구"}, {"name": "밥꼬콩불 대구현풍점", "address": "대구광역시 달성군 현풍읍 테크노중앙대로 325-38", "brand": "밥꼬콩불", "sido": "대구광역시", "sigungu": "달성군"}, {"name": "밥꼬콩불 부산지사점", "address": "부산광역시 강서구 과학산단2로20번길 91", "brand": "밥꼬콩불", "sido": "부산광역시", "sigungu": "강서구"}, {"name": "밥꼬콩불 서정이충점", "address": "경기도 평택시 송일로25번길 34", "brand": "밥꼬콩불", "sido": "경기", "sigungu": "평택시"}, {"name": "밥꼬콩불 영암삼호점", "address": "전라남도 영암군 삼호읍 모밀항길 39-18", "brand": "밥꼬콩불", "sido": "전남", "sigungu": "영암군"}, {"name": "밥꼬콩불 삼척점", "address": "강원특별자치도 삼척시 척주로 10", "brand": "밥꼬콩불", "sido": "강원", "sigungu": "삼척시"}, {"name": "밥꼬콩불 남구주월점", "address": "광주광역시 남구 회서로 12번길 3", "brand": "밥꼬콩불", "sido": "광주광역시", "sigungu": "남구"}, {"name": "밥꼬콩불 해운대좌동점", "address": "부산광역시 해운대구 양운로 104", "brand": "밥꼬콩불", "sido": "부산광역시", "sigungu": "해운대구"}, {"name": "밥꼬콩불 구제주점", "address": "제주특별자치도 제주시 연수로3길 20", "brand": "밥꼬콩불", "sido": "제주", "sigungu": "제주시"}, {"name": "밥꼬콩불 대구상인점", "address": "대구광역시 달서구 상화북로 83-1", "brand": "밥꼬콩불", "sido": "대구광역시", "sigungu": "달서구"}, {"name": "밥꼬찜닭 서산대산점", "address": "충청남도 서산시 대산읍 정자동5로 22", "brand": "밥꼬찜닭", "sido": "충남", "sigungu": "서산시"}, {"name": "밥꼬찜닭&콩불 검단신도시점", "address": "인천광역시 서구 이음5로 72", "brand": "밥꼬콩불", "sido": "인천광역시", "sigungu": "서구"}, {"name": "밥꼬콩불 김포통진점", "address": "경기도 김포시 통진읍 율마로 384번길 18", "brand": "밥꼬콩불", "sido": "경기", "sigungu": "김포시"}, {"name": "밥꼬콩불 창녕남지점", "address": "경상남도 창녕군 남지읍 동포로42", "brand": "밥꼬콩불", "sido": "경남", "sigungu": "창녕군"}, {"name": "밥꼬콩불 동군산점", "address": "전라북도 군산시 조촌안4길 22", "brand": "밥꼬콩불", "sido": "전북", "sigungu": "군산시"}, {"name": "밥꼬콩불 서군산점", "address": "전라특별자치도 군산시 산북로 148", "brand": "밥꼬콩불", "sido": "전남", "sigungu": "군산시"}, {"name": "밥꼬콩불 홍성2점", "address": "충청남도 홍성군 홍성읍 충절로 1053번길 9", "brand": "밥꼬콩불", "sido": "충남", "sigungu": "홍성군"}, {"name": "밥꼬콩불 청주옥산점", "address": "충청북도 청주시 흥덕구 옥산면 가락길 28", "brand": "밥꼬콩불", "sido": "충북", "sigungu": "청주시"}, {"name": "밥꼬콩불 안동점", "address": "경상북도 안동시 강남4길 34", "brand": "밥꼬콩불", "sido": "경북", "sigungu": "안동시"}, {"name": "밥꼬콩불 군포점", "address": "경기도 군포시 삼성로 5", "brand": "밥꼬콩불", "sido": "경기", "sigungu": "군포시"}, {"name": "밥꼬콩불 춘천점", "address": "강원특별자치도 춘천시 벌말길 72", "brand": "밥꼬콩불", "sido": "강원", "sigungu": "춘천시"}, {"name": "밥꼬콩불 부천점", "address": "경기도 부천시 원미구 계남로301번길 39-2", "brand": "밥꼬콩불", "sido": "경기", "sigungu": "부천시"}, {"name": "밥꼬콩불 경북도청점", "address": "경상북도 예천군 호명읍 새움3로 16", "brand": "밥꼬콩불", "sido": "경북", "sigungu": "예천군"}, {"name": "밥꼬찜닭 대화점2A", "address": "경기도 고양시 일산동구 산두로 273번길 9", "brand": "밥꼬찜닭", "sido": "경기", "sigungu": "고양시"}, {"name": "밥꼬콩불 부산반여점", "address": "부산광역시 해운대구 반여로 104", "brand": "밥꼬콩불", "sido": "부산광역시", "sigungu": "해운대구"}, {"name": "밥꼬콩불 김제2점", "address": "전북특별자치도 김제시 중앙로 221", "brand": "밥꼬콩불", "sido": "전북", "sigungu": "김제시"}, {"name": "밥꼬콩불 부산수정점", "address": "부산광역시 동구 수정로 19-1", "brand": "밥꼬콩불", "sido": "부산광역시", "sigungu": "동구"}, {"name": "밥꼬콩불 부산대연점", "address": "부산광역시 남구 수영로 208번길 50", "brand": "밥꼬콩불", "sido": "부산광역시", "sigungu": "남구"}, {"name": "밥꼬콩불 화성봉담점", "address": "경기도 화성시 봉담읍 오래3길 6", "brand": "밥꼬콩불", "sido": "경기", "sigungu": "화성시"}, {"name": "밥꼬콩불 포항오천2점", "address": "경상북도 포항시 남구 오천읍 문덕로 23번길 9-1", "brand": "밥꼬콩불", "sido": "경북", "sigungu": "포항시"}, {"name": "밥꼬콩불 영종하늘도시점", "address": "인천광역시 중구 자연대로 38", "brand": "밥꼬콩불", "sido": "인천광역시", "sigungu": "중구"}, {"name": "밥꼬콩불 용인역북점", "address": "경기도 용인시 처인구 중부대로 1331번길 10-18", "brand": "밥꼬콩불", "sido": "경기", "sigungu": "용인시"}, {"name": "밥꼬콩불 대구산격점", "address": "대구광역시 북구 대동로1길 34", "brand": "밥꼬콩불", "sido": "대구광역시", "sigungu": "북구"}, {"name": "밥꼬콩불 포항북구점", "address": "경상북도 포항시 북구 법원로51번길 15", "brand": "밥꼬콩불", "sido": "경북", "sigungu": "포항시"}, {"name": "밥꼬콩불 평택비전점", "address": "경기도 평택시 비전2로 200", "brand": "밥꼬콩불", "sido": "경기", "sigungu": "평택시"}, {"name": "밥꼬콩불 화성향남2점", "address": "경기도 화성시 향남읍 상신하길로 144번길 32-12", "brand": "밥꼬콩불", "sido": "경기", "sigungu": "화성시"}, {"name": "밥꼬콩불 서산점", "address": "충청남도 서산시 문화로 83", "brand": "밥꼬콩불", "sido": "충남", "sigungu": "서산시"}, {"name": "밥꼬콩불 마산경남대점", "address": "경상남도 창원시 마산합포구 가포로 36-1", "brand": "밥꼬콩불", "sido": "경남", "sigungu": "창원시"}, {"name": "밥꼬콩불 성남중원점", "address": "경기도 성남시 중원구 박석로 25번길 29", "brand": "밥꼬콩불", "sido": "경기", "sigungu": "성남시"}, {"name": "밥꼬콩불 가산점", "address": "서울특별시 구로구 남부순환로 105라길 15", "brand": "밥꼬콩불", "sido": "서울특별시", "sigungu": "구로구"}, {"name": "밥꼬콩불 포항남구점", "address": "경상북도 포항시 남구 중흥로 172번길 41", "brand": "밥꼬콩불", "sido": "경북", "sigungu": "포항시"}, {"name": "밥꼬콩불 서충주2점", "address": "충청북도 충주시 대소원면 첨단산업1로 71", "brand": "밥꼬콩불", "sido": "충북", "sigungu": "충주시"}, {"name": "밥꼬콩불 여수점", "address": "전라남도 여수시 수정2길 10-1", "brand": "밥꼬콩불", "sido": "전남", "sigungu": "여수시"}, {"name": "밥꼬콩불 평택팽성점", "address": "경기도 평택시 팽성읍 송화택지로25번길 7-1", "brand": "밥꼬콩불", "sido": "경기", "sigungu": "평택시"}, {"name": "밥꼬찜닭 익산점", "address": "전북특별자치도 익산시 동서로 19길 59", "brand": "밥꼬찜닭", "sido": "전북", "sigungu": "익산시"}, {"name": "밥꼬콩불 대구칠곡점", "address": "대구광역시 북구 도남중앙로7길 7", "brand": "밥꼬콩불", "sido": "대구광역시", "sigungu": "북구"}, {"name": "밥꼬콩불 양산북정점", "address": "경상남도 양산시 북정서길 25", "brand": "밥꼬콩불", "sido": "경남", "sigungu": "양산시"}, {"name": "밥꼬콩불 구리인창점", "address": "경기도 구리시 건원대로99번길 58-3", "brand": "밥꼬콩불", "sido": "경기", "sigungu": "구리시"}, {"name": "밥꼬콩불 대구남산점", "address": "대구광역시 중구 중앙대로 282", "brand": "밥꼬콩불", "sido": "대구광역시", "sigungu": "중구"}, {"name": "밥꼬콩불 양양점", "address": "강원특별자치도 양양군 양양읍 양양로 110", "brand": "밥꼬콩불", "sido": "강원", "sigungu": "양양군"}, {"name": "밥꼬콩불 아산배방점", "address": "충청남도 아산시 배방읍 모산로 38-11", "brand": "밥꼬콩불", "sido": "충남", "sigungu": "아산시"}, {"name": "밥꼬콩불 강동점", "address": "서울특별시 강동구 천중로32길 42", "brand": "밥꼬콩불", "sido": "서울특별시", "sigungu": "강동구"}, {"name": "밥꼬콩불 거제고현점", "address": "경상남도 거제시 거제중앙로 1830", "brand": "밥꼬콩불", "sido": "경남", "sigungu": "거제시"}, {"name": "밥꼬콩불 태백2점", "address": "강원특별자치도 태백시 해지개길 24", "brand": "밥꼬콩불", "sido": "강원", "sigungu": "태백시"}, {"name": "밥꼬콩불 사천점", "address": "경상남도 사천시 사천읍 정의길 72", "brand": "밥꼬콩불", "sido": "경남", "sigungu": "사천시"}, {"name": "밥꼬콩불 대전가오점", "address": "대전광역시 동구 신기로101번길 40", "brand": "밥꼬콩불", "sido": "대전광역시", "sigungu": "동구"}, {"name": "밥꼬콩불 의정부가능점", "address": "경기도 의정부시 가능로39번길 29", "brand": "밥꼬콩불", "sido": "경기", "sigungu": "의정부시"}, {"name": "밥꼬콩불 개금점", "address": "부산광역시 부산진구 백양대로 357번길 78", "brand": "밥꼬콩불", "sido": "부산광역시", "sigungu": "부산진구"}, {"name": "밥꼬콩불 김해율하점", "address": "경상남도 김해시 율하3로 27(율하동)", "brand": "밥꼬콩불", "sido": "경남", "sigungu": "김해시"}, {"name": "밥꼬콩불 간석점", "address": "인천광역시 남동구 구월로 137번길 40", "brand": "밥꼬콩불", "sido": "인천광역시", "sigungu": "남동구"}, {"name": "밥꼬콩불 종각점", "address": "서울특별시 종로구 삼일대로 469", "brand": "밥꼬콩불", "sido": "서울특별시", "sigungu": "종로구"}, {"name": "밥꼬콩불 신제주2점", "address": "제주특별자치도 제주시 도령로 54", "brand": "밥꼬콩불", "sido": "제주", "sigungu": "제주시"}, {"name": "밥꼬콩불 강릉입암점", "address": "강원도 강릉시 월대산로 68", "brand": "밥꼬콩불", "sido": "강원", "sigungu": "강릉시"}, {"name": "밥꼬콩불 진접점", "address": "경기도 남양주시 진접읍 해밀예당1로 241", "brand": "밥꼬콩불", "sido": "경기", "sigungu": "남양주시"}, {"name": "밥꼬콩불 논산점", "address": "충청남도 논산시 시민로 415", "brand": "밥꼬콩불", "sido": "충남", "sigungu": "논산시"}, {"name": "밥꼬콩불 송탄점", "address": "경기도 평택시 송탄로 245", "brand": "밥꼬콩불", "sido": "경기", "sigungu": "평택시"}, {"name": "밥꼬콩불 고흥녹동점", "address": "전라남도 고흥군 도양읍 우주항공로 29", "brand": "밥꼬콩불", "sido": "전남", "sigungu": "고흥군"}, {"name": "밥꼬콩불 부산명지점", "address": "부산광역시 강서구 명지국제1로 25", "brand": "밥꼬콩불", "sido": "부산광역시", "sigungu": "강서구"}, {"name": "밥꼬콩불 진주경상대점", "address": "경상남도 진주시 진주대로 518", "brand": "밥꼬콩불", "sido": "경남", "sigungu": "진주시"}, {"name": "밥꼬콩불 용인기흥점", "address": "경기도 용인시 기흥구 금화로 106", "brand": "밥꼬콩불", "sido": "경기", "sigungu": "용인시"}, {"name": "밥꼬콩불 경주2점", "address": "경상북도 경주시 북문로 125-15", "brand": "밥꼬콩불", "sido": "경북", "sigungu": "경주시"}, {"name": "밥꼬콩불 진건점", "address": "경기도 남양주시 진건읍 사릉로392번길 2", "brand": "밥꼬콩불", "sido": "경기", "sigungu": "남양주시"}, {"name": "밥꼬콩불 안성공도점", "address": "경기도 안성시 공도읍 고무다리길 32", "brand": "밥꼬콩불", "sido": "경기", "sigungu": "안성시"}, {"name": "밥꼬콩불 강동산하2점", "address": "울산광역시 북구 산하중앙2로 183", "brand": "밥꼬콩불", "sido": "울산광역시", "sigungu": "북구"}, {"name": "밥꼬콩불 응암역점", "address": "서울특별시 은평구 응암로 14길 15-5", "brand": "밥꼬콩불", "sido": "서울특별시", "sigungu": "은평구"}, {"name": "밥꼬콩불 경북상주점", "address": "경상북도 상주시 서문길 97", "brand": "밥꼬콩불", "sido": "경북", "sigungu": "상주시"}, {"name": "밥꼬콩불 연신내점", "address": "서울특별시 은평구 갈현로 302-3", "brand": "밥꼬콩불", "sido": "서울특별시", "sigungu": "은평구"}, {"name": "밥꼬콩불 신탄진점", "address": "대전광역시 대덕구 덕암로 265번길 55", "brand": "밥꼬콩불", "sido": "대전광역시", "sigungu": "대덕구"}, {"name": "밥꼬콩불 봉황점", "address": "경상남도 김해시 김해대로 2283번길 15", "brand": "밥꼬콩불", "sido": "경남", "sigungu": "김해시"}, {"name": "밥꼬콩불 삼천포점", "address": "경상남도 사천시 남일로 40", "brand": "밥꼬콩불", "sido": "경남", "sigungu": "사천시"}, {"name": "밥꼬콩불 천안성거점", "address": "충청남도 천안시 서북구 성거읍 성거길 129", "brand": "밥꼬콩불", "sido": "충남", "sigungu": "천안시"}, {"name": "밥꼬콩불 광진점", "address": "서울특별시 광진구 광나루로 369", "brand": "밥꼬콩불", "sido": "서울특별시", "sigungu": "광진구"}, {"name": "밥꼬콩불 아산용화점", "address": "충청남도 아산시 온화로 17번길 8-4", "brand": "밥꼬콩불", "sido": "충남", "sigungu": "아산시"}, {"name": "밥꼬콩불 울산동구2점", "address": "울산광역시 동구 월봉로 23", "brand": "밥꼬콩불", "sido": "울산광역시", "sigungu": "동구"}, {"name": "밥꼬콩불 수유점", "address": "서울특별시 강북구 한천로132길 57", "brand": "밥꼬콩불", "sido": "서울특별시", "sigungu": "강북구"}, {"name": "밥꼬콩불 창원상남2점", "address": "경상남도 창원시 성산구 신사로 34", "brand": "밥꼬콩불", "sido": "경남", "sigungu": "창원시"}, {"name": "밥꼬콩불 신림점", "address": "서울특별시 관악구 당곡길 16", "brand": "밥꼬콩불", "sido": "서울특별시", "sigungu": "관악구"}, {"name": "밥꼬찜닭&콩불 행신3점", "address": "경기도 고양시 덕양구 행신로 359번길 4-59", "brand": "밥꼬콩불", "sido": "경기", "sigungu": "고양시"}, {"name": "밥꼬콩불 당진송악2점", "address": "충청남도 당진시 송악읍 신복운로5길 4-23", "brand": "밥꼬콩불", "sido": "충남", "sigungu": "당진시"}, {"name": "밥꼬콩불 양주옥정2점", "address": "경기도 양주시 고원2가길 27", "brand": "밥꼬콩불", "sido": "경기", "sigungu": "양주시"}, {"name": "밥꼬콩불 왕십리점", "address": "서울특별시 성동구 마장로 228-18", "brand": "밥꼬콩불", "sido": "서울특별시", "sigungu": "성동구"}, {"name": "밥꼬콩불 안산고잔점", "address": "경기도 안산시 단원구 광덕3로 135-10", "brand": "밥꼬콩불", "sido": "경기", "sigungu": "안산시"}, {"name": "밥꼬콩불 안성대림동산점", "address": "경기도 안성시 공도읍 가족공원길 20", "brand": "밥꼬콩불", "sido": "경기", "sigungu": "안성시"}, {"name": "밥꼬콩불 화곡점", "address": "서울특별시 양천구 월정로42길 9", "brand": "밥꼬콩불", "sido": "서울특별시", "sigungu": "양천구"}, {"name": "밥꼬콩불 인천청천점", "address": "인천광역시 부평구 마장로 450번길 3-6 1층 105호", "brand": "밥꼬콩불", "sido": "인천광역시", "sigungu": "부평구"}, {"name": "밥꼬콩불 제천장락점", "address": "충청북도 제천시 죽하로 11길 3", "brand": "밥꼬콩불", "sido": "충북", "sigungu": "제천시"}, {"name": "밥꼬콩불 경주안강점", "address": "경상북도 경주시 안강읍 구부랑4길 6-9", "brand": "밥꼬콩불", "sido": "경북", "sigungu": "경주시"}, {"name": "밥꼬콩불 정읍4점", "address": "전라북도 정읍시 우암로 48", "brand": "밥꼬콩불", "sido": "전북", "sigungu": "정읍시"}, {"name": "밥꼬콩불 청도점", "address": "경상북도 청도군 청도읍 고수동4길 16", "brand": "밥꼬콩불", "sido": "경북", "sigungu": "청도군"}, {"name": "밥꼬콩불 대구동변점", "address": "대구광역시 북구 동변로 98", "brand": "밥꼬콩불", "sido": "대구광역시", "sigungu": "북구"}, {"name": "밥꼬콩불 동두천점", "address": "경기도 동두천시 생연로 150", "brand": "밥꼬콩불", "sido": "경기", "sigungu": "동두천시"}, {"name": "밥꼬콩불 독산점", "address": "서울특별시 금천구 독산로 201-1", "brand": "밥꼬콩불", "sido": "서울특별시", "sigungu": "금천구"}, {"name": "밥꼬콩불 진해용원3점", "address": "경상남도 창원시 진해구 안청로4번길 17", "brand": "밥꼬콩불", "sido": "경남", "sigungu": "창원시"}, {"name": "밥꼬콩불 진천점", "address": "충청북도 진천군 진천읍 중앙서로 25-10", "brand": "밥꼬콩불", "sido": "충북", "sigungu": "진천군"}, {"name": "밥꼬콩불 연천점", "address": "경기도 연천군 연천읍 연천역로5번길 5", "brand": "밥꼬콩불", "sido": "경기", "sigungu": "연천군"}, {"name": "밥꼬콩불 장호원점", "address": "경기도 이천시 장호원읍 서동대로8965번길 41", "brand": "밥꼬콩불", "sido": "경기", "sigungu": "이천시"}, {"name": "밥꼬콩불 인계점", "address": "경기도 수원시 팔달구 권광로207번길 13", "brand": "밥꼬콩불", "sido": "경기", "sigungu": "수원시"}, {"name": "밥꼬콩불 칠곡관음점", "address": "대구광역시 북구 칠곡중앙대로 473", "brand": "밥꼬콩불", "sido": "대구광역시", "sigungu": "북구"}, {"name": "밥꼬콩불 문경점", "address": "경상북도 문경시 중앙로 87", "brand": "밥꼬콩불", "sido": "경북", "sigungu": "문경시"}, {"name": "밥꼬콩불 천안직산점", "address": "충청남도 천안시 서북구 직산읍 아랫말1길 15", "brand": "밥꼬콩불", "sido": "충남", "sigungu": "천안시"}, {"name": "밥꼬콩불 마산내서점", "address": "경상남도 창원시 마산회원구 내서읍 호계본동로 36", "brand": "밥꼬콩불", "sido": "경남", "sigungu": "창원시"}, {"name": "밥꼬콩불 광주초월점", "address": "경기도 광주시 초월읍 무들로 12", "brand": "밥꼬콩불", "sido": "경기", "sigungu": "광주시"}, {"name": "밥꼬콩불 이천하이닉스점", "address": "경기도 이천시 부발읍 경충대로 2106", "brand": "밥꼬콩불", "sido": "경기", "sigungu": "이천시"}, {"name": "밥꼬콩불 용인한숲시티점", "address": "경기도 용인시 처인구 남사읍 한숲로 60", "brand": "밥꼬콩불", "sido": "경기", "sigungu": "용인시"}, {"name": "밥꼬콩불 거창점", "address": "경상남도 거창군 거창읍 공수들5길 53", "brand": "밥꼬콩불", "sido": "경남", "sigungu": "거창군"}, {"name": "밥꼬콩불 대구대명점", "address": "대구광역시 남구 장전2길 13-1", "brand": "밥꼬콩불", "sido": "대구광역시", "sigungu": "남구"}, {"name": "밥꼬콩불 남양주화도점", "address": "경기도 남양주시 화도읍 마석로 87-9", "brand": "밥꼬콩불", "sido": "경기", "sigungu": "남양주시"}, {"name": "밥꼬콩불 구미옥계점", "address": "경상북도 구미시 산호대로21길 10", "brand": "밥꼬콩불", "sido": "경북", "sigungu": "구미시"}, {"name": "밥꼬콩불 충주교현점", "address": "충청북도 충주시 봉현로 229", "brand": "밥꼬콩불", "sido": "충북", "sigungu": "충주시"}, {"name": "밥꼬콩불 고창점", "address": "전북특별자치도 고창군 고창읍 성산2길 26", "brand": "밥꼬콩불", "sido": "전북", "sigungu": "고창군"}, {"name": "밥꼬콩불 울산무거점", "address": "울산광역시 남구 신복로 48", "brand": "밥꼬콩불", "sido": "울산광역시", "sigungu": "남구"}, {"name": "밥꼬콩불 진주평거점", "address": "경상남도 진주시 평거로 164번길 12", "brand": "밥꼬콩불", "sido": "경남", "sigungu": "진주시"}, {"name": "밥꼬콩불 홍대점", "address": "서울특별시 마포구 홍익로 10", "brand": "밥꼬콩불", "sido": "서울특별시", "sigungu": "마포구"}, {"name": "밥꼬콩불 방이점", "address": "서울특별시 송파구 가락로33길 29", "brand": "밥꼬콩불", "sido": "서울특별시", "sigungu": "송파구"}, {"name": "밥꼬콩불 경산옥산점", "address": "경상북도 경산시 성암로 65", "brand": "밥꼬콩불", "sido": "경북", "sigungu": "경산시"}, {"name": "먹짱 호매실점", "address": "경기도 수원시 권선구 금호로 83-8", "brand": "먹짱국물두루치기", "sido": "경기", "sigungu": "수원시"}, {"name": "밥꼬콩불 음성대소점", "address": "충청북도 음성군 대소면 오태로 116번길 7", "brand": "밥꼬콩불", "sido": "충북", "sigungu": "음성군"}, {"name": "밥꼬콩불 동해점", "address": "강원특별자치도 동해시 천곡1길 9-1", "brand": "밥꼬콩불", "sido": "강원", "sigungu": "동해시"}, {"name": "밥꼬콩불 전주인후점", "address": "전북특별자치도 전주시 덕진구 가재미로 51", "brand": "밥꼬콩불", "sido": "전북", "sigungu": "전주시"}, {"name": "밥꼬콩불 홍천점", "address": "강원특별자치도 홍천군 홍천읍 신장대로 54", "brand": "밥꼬콩불", "sido": "강원", "sigungu": "홍천군"}, {"name": "밥꼬콩불 영주점", "address": "경상북도 영주시 대학로 324", "brand": "밥꼬콩불", "sido": "경북", "sigungu": "영주시"}];
+
 const BRAND_COLORS = {
   '밥꼬찜닭': '#2e7d32', '밥꼬콩불': '#f57f17',
   '먹짱국물두루치기': '#c62828', '기타': '#8B5C2A'
 };
 const UNJUNG = { lat: 37.7074, lng: 126.7491 };
 
-let map, markers = [], activeIdx = -1, filteredStores = [];
+let map, markers = [], activeOrigIdx = -1, filteredStores = [];
 let selectedBrand = '', userLat = null, userLng = null, userMarker = null;
 let storeCoords = [];
+// 정렬된 목록 (origIdx 포함) 전역 저장
+let sortedList = [];
 
 function getBrandClass(brand) {
   if (brand.includes('찜닭')) return 'brand-찜닭';
@@ -169,11 +195,15 @@ function initMap(lat, lng, zoom) {
 
 function showUserMarker(lat, lng) {
   if (userMarker) userMarker.setMap(null);
+  // 내 위치 핀: 파란 원 + 외곽 pulse 링
   userMarker = new naver.maps.Marker({
     position: new naver.maps.LatLng(lat, lng), map: map,
     icon: {
-      content: '<div style="width:16px;height:16px;background:#1a73e8;border:3px solid #fff;border-radius:50%;box-shadow:0 0 0 3px rgba(26,115,232,0.3);"></div>',
-      anchor: new naver.maps.Point(8, 8)
+      content: `<div style="position:relative;width:28px;height:28px;">
+        <div style="position:absolute;inset:0;background:rgba(26,115,232,0.2);border-radius:50%;animation:none;"></div>
+        <div style="position:absolute;top:6px;left:6px;width:16px;height:16px;background:#1a73e8;border:3px solid #fff;border-radius:50%;box-shadow:0 2px 6px rgba(26,115,232,0.5);"></div>
+      </div>`,
+      anchor: new naver.maps.Point(14, 14)
     }, zIndex: 999
   });
 }
@@ -181,11 +211,20 @@ function showUserMarker(lat, lng) {
 function startMap() {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
-      pos => { userLat=pos.coords.latitude; userLng=pos.coords.longitude; initMap(userLat,userLng,14); showUserMarker(userLat,userLng); loadStores(true); },
-      () => { initMap(UNJUNG.lat,UNJUNG.lng,15); loadStores(false); },
-      {timeout:5000}
+      pos => {
+        userLat = pos.coords.latitude;
+        userLng = pos.coords.longitude;
+        initMap(userLat, userLng, 13);
+        showUserMarker(userLat, userLng);
+        loadStores(true);
+      },
+      () => { initMap(UNJUNG.lat, UNJUNG.lng, 13); loadStores(false); },
+      { timeout: 6000 }
     );
-  } else { initMap(UNJUNG.lat,UNJUNG.lng,15); loadStores(false); }
+  } else {
+    initMap(UNJUNG.lat, UNJUNG.lng, 13);
+    loadStores(false);
+  }
 }
 
 function loadStores(hasLoc) {
@@ -198,15 +237,16 @@ function geocodeAll(stores, sortByDist) {
   markers = new Array(stores.length);
   storeCoords = new Array(stores.length);
   let resolved = 0;
+
   stores.forEach((store, i) => {
-    naver.maps.Service.geocode({query: store.address}, (status, res) => {
+    naver.maps.Service.geocode({ query: store.address }, (status, res) => {
       resolved++;
       if (status === naver.maps.Service.Status.OK && res.v2.addresses[0]) {
         const item = res.v2.addresses[0];
         const lat = parseFloat(item.y), lng = parseFloat(item.x);
-        storeCoords[i] = {lat, lng};
+        storeCoords[i] = { lat, lng };
         const pos = new naver.maps.LatLng(lat, lng);
-        const color = BRAND_COLORS[store.brand]||'#8B5C2A';
+        const color = BRAND_COLORS[store.brand] || '#8B5C2A';
         const shortName = store.name.replace('밥꼬찜닭 ','').replace('밥꼬콩불 ','').replace('먹짱국물두루치기 ','');
         const marker = new naver.maps.Marker({
           position: pos, map: map, title: store.name,
@@ -215,79 +255,113 @@ function geocodeAll(stores, sortByDist) {
             anchor: new naver.maps.Point(0, 20)
           }
         });
-        naver.maps.Event.addListener(marker, 'click', () => selectStoreByOriginalIdx(i));
+        naver.maps.Event.addListener(marker, 'click', () => selectStore(i));
         markers[i] = marker;
       }
+
       if (resolved === stores.length) {
-        if (sortByDist && userLat !== null) { renderListWithDist(stores); focusNearest(stores); }
-        else { renderList(stores); }
+        if (sortByDist && userLat !== null) {
+          renderListWithDist(stores);
+          fitBoundsToUserAndNearest(stores);
+        } else {
+          renderList(stores);
+        }
       }
     });
   });
 }
 
-function renderListWithDist(stores) {
-  const withDist = stores.map((s,i) => {
+// ── 핵심 변경: 내 위치 + 가장 가까운 매장이 함께 보이도록 bounds 자동 조절 ──
+function fitBoundsToUserAndNearest(stores) {
+  let minDist = 99999, nearestIdx = -1;
+  stores.forEach((s, i) => {
     const coord = storeCoords[i];
-    const dist = coord ? calcDist(userLat,userLng,coord.lat,coord.lng) : 99999;
-    return {...s, origIdx:i, dist};
+    if (!coord) return;
+    const dist = calcDist(userLat, userLng, coord.lat, coord.lng);
+    if (dist < minDist) { minDist = dist; nearestIdx = i; }
   });
-  withDist.sort((a,b) => a.dist-b.dist);
-  document.getElementById('list-header').textContent = '가까운 순 '+withDist.length+'개 매장';
-  document.getElementById('store-list').innerHTML = withDist.map((s,i) => `
-    <div class="store-item" id="item-${i}" onclick="selectStoreByOriginalIdx(${s.origIdx})">
+
+  if (nearestIdx < 0) return;
+
+  const nearestCoord = storeCoords[nearestIdx];
+
+  // 내 위치와 가장 가까운 매장을 모두 포함하는 bounds 계산
+  const bounds = new naver.maps.LatLngBounds(
+    new naver.maps.LatLng(
+      Math.min(userLat, nearestCoord.lat),
+      Math.min(userLng, nearestCoord.lng)
+    ),
+    new naver.maps.LatLng(
+      Math.max(userLat, nearestCoord.lat),
+      Math.max(userLng, nearestCoord.lng)
+    )
+  );
+
+  // 여백 포함해서 fitBounds
+  map.fitBounds(bounds, { top: 80, right: 60, bottom: 60, left: 60 });
+}
+
+function renderListWithDist(stores) {
+  sortedList = stores.map((s, i) => {
+    const coord = storeCoords[i];
+    const dist = coord ? calcDist(userLat, userLng, coord.lat, coord.lng) : 99999;
+    return { ...s, origIdx: i, dist };
+  }).sort((a, b) => a.dist - b.dist);
+
+  document.getElementById('list-header').innerHTML =
+    `<span class="loc-badge">내 위치 기준</span> 가까운 순 ${sortedList.length}개 매장`;
+
+  document.getElementById('store-list').innerHTML = sortedList.map((s, listIdx) => `
+    <div class="store-item${listIdx === 0 ? ' nearest-badge' : ''}" id="item-${listIdx}" onclick="selectStore(${s.origIdx})">
       <span class="store-brand ${getBrandClass(s.brand)}">${s.brand}</span>
       <div class="store-name">${s.name}</div>
       <div class="store-addr">${s.address}</div>
-      <div class="store-dist">내 위치에서 ${formatDist(s.dist)}</div>
+      <div class="store-dist">📍 내 위치에서 ${formatDist(s.dist)}</div>
     </div>`).join('');
-}
-
-function focusNearest(stores) {
-  let minDist=99999, nearestIdx=-1;
-  stores.forEach((s,i) => {
-    const coord = storeCoords[i];
-    if (!coord) return;
-    const dist = calcDist(userLat,userLng,coord.lat,coord.lng);
-    if (dist < minDist) { minDist=dist; nearestIdx=i; }
-  });
-  if (nearestIdx>=0 && markers[nearestIdx]) { map.setCenter(markers[nearestIdx].getPosition()); map.setZoom(14); }
 }
 
 function renderList(stores) {
-  document.getElementById('list-header').textContent = '전체 '+stores.length+'개 매장';
+  sortedList = stores.map((s, i) => ({ ...s, origIdx: i }));
+  document.getElementById('list-header').innerHTML = `전체 ${stores.length}개 매장`;
   const el = document.getElementById('store-list');
-  if (stores.length===0) { el.innerHTML='<div class="no-result">검색 결과가 없습니다.</div>'; return; }
-  el.innerHTML = stores.map((s,i) => `
-    <div class="store-item" id="item-${i}" onclick="selectStoreByOriginalIdx(${i})">
+  if (stores.length === 0) { el.innerHTML = '<div class="no-result">검색 결과가 없습니다.</div>'; return; }
+  el.innerHTML = stores.map((s, i) => `
+    <div class="store-item" id="item-${i}" onclick="selectStore(${i})">
       <span class="store-brand ${getBrandClass(s.brand)}">${s.brand}</span>
       <div class="store-name">${s.name}</div>
       <div class="store-addr">${s.address}</div>
     </div>`).join('');
 }
 
-function selectStoreByOriginalIdx(origIdx) {
-  if (activeIdx>=0) {
-    const prev = document.getElementById('item-'+activeIdx);
-    if (prev) prev.classList.remove('active');
+// ── 핵심 변경: origIdx 기반으로 목록 아이템 찾기 ──
+function selectStore(origIdx) {
+  // 이전 active 해제
+  if (activeOrigIdx >= 0) {
+    const prevListIdx = sortedList.findIndex(s => s.origIdx === activeOrigIdx);
+    if (prevListIdx >= 0) document.getElementById('item-'+prevListIdx)?.classList.remove('active');
   }
-  const listItems = document.querySelectorAll('.store-item');
-  let listIdx = -1;
-  listItems.forEach((el,i) => { if (el.getAttribute('onclick').includes('('+origIdx+')')) listIdx=i; });
-  activeIdx = listIdx;
-  if (listIdx>=0) {
+
+  // 새 active 설정
+  activeOrigIdx = origIdx;
+  const listIdx = sortedList.findIndex(s => s.origIdx === origIdx);
+  if (listIdx >= 0) {
     const el = document.getElementById('item-'+listIdx);
-    if (el) { el.classList.add('active'); el.scrollIntoView({behavior:'smooth',block:'nearest'}); }
+    if (el) { el.classList.add('active'); el.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
   }
-  if (markers[origIdx]) { map.setCenter(markers[origIdx].getPosition()); map.setZoom(15); }
+
+  // 지도 이동
+  if (markers[origIdx]) {
+    map.setCenter(markers[origIdx].getPosition());
+    map.setZoom(15);
+  }
 }
 
 function selectBrand(brand) {
   selectedBrand = brand;
   document.querySelectorAll('.brand-tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.brand-tab').forEach(t => {
-    if (brand==='' && t.classList.contains('all')) t.classList.add('active');
-    if (brand!=='' && t.textContent===brand) t.classList.add('active');
+    if (brand === '' && t.classList.contains('all')) t.classList.add('active');
+    if (brand !== '' && t.textContent === brand) t.classList.add('active');
   });
   search();
 }
@@ -296,29 +370,29 @@ function updateSigungu() {
   const sido = document.getElementById('sido').value;
   const sel = document.getElementById('sigungu');
   sel.innerHTML = '<option value="">시/군/구 전체</option>';
-  [...new Set(STORES.filter(s => !sido||s.sido===sido).map(s=>s.sigungu))]
-    .filter(Boolean).sort().forEach(sg => sel.innerHTML+=`<option value="${sg}">${sg}</option>`);
+  [...new Set(STORES.filter(s => !sido || s.sido === sido).map(s => s.sigungu))]
+    .filter(Boolean).sort().forEach(sg => sel.innerHTML += `<option value="${sg}">${sg}</option>`);
 }
 
 function search() {
-  const sido=document.getElementById('sido').value;
-  const sigungu=document.getElementById('sigungu').value;
-  const keyword=document.getElementById('keyword').value.trim();
+  const sido = document.getElementById('sido').value;
+  const sigungu = document.getElementById('sigungu').value;
+  const keyword = document.getElementById('keyword').value.trim();
   filteredStores = STORES.filter(s => {
-    if (selectedBrand && s.brand!==selectedBrand) return false;
-    if (sido && s.sido!==sido) return false;
-    if (sigungu && s.sigungu!==sigungu) return false;
+    if (selectedBrand && s.brand !== selectedBrand) return false;
+    if (sido && s.sido !== sido) return false;
+    if (sigungu && s.sigungu !== sigungu) return false;
     if (keyword && !s.name.includes(keyword) && !s.address.includes(keyword)) return false;
     return true;
   });
-  activeIdx = -1;
-  geocodeAll(filteredStores, userLat!==null);
+  activeOrigIdx = -1;
+  geocodeAll(filteredStores, userLat !== null);
 }
 
 window.onload = function() {
-  const sidos = [...new Set(STORES.map(s=>s.sido))].filter(Boolean).sort();
+  const sidos = [...new Set(STORES.map(s => s.sido))].filter(Boolean).sort();
   const sidoSel = document.getElementById('sido');
-  sidos.forEach(s => sidoSel.innerHTML+=`<option value="${s}">${s}</option>`);
+  sidos.forEach(s => sidoSel.innerHTML += `<option value="${s}">${s}</option>`);
   startMap();
 };
 </script>

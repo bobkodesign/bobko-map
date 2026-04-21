@@ -16,15 +16,15 @@ html, body {
 }
 .wrap {
   width: 100%;
-  padding: 24px 20px;
+  padding: 12px 12px 0;
   display: flex;
   flex-direction: column;
   height: 100vh;
 }
-h1 { text-align: center; font-size: 24px; color: #3b1f0e; margin-bottom: 6px; }
-.sub { text-align: center; font-size: 14px; color: #3b1f0e; font-weight: bold; margin-bottom: 16px; }
+h1 { text-align: center; font-size: 20px; color: #3b1f0e; margin-bottom: 4px; }
+.sub { text-align: center; font-size: 13px; color: #3b1f0e; font-weight: bold; margin-bottom: 10px; }
 
-.brand-tabs { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+.brand-tabs { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
 .brand-tab {
   padding: 7px 16px; border-radius: 20px; font-size: 13px;
   cursor: pointer; font-weight: bold; border: 2px solid transparent;
@@ -42,7 +42,7 @@ h1 { text-align: center; font-size: 24px; color: #3b1f0e; margin-bottom: 6px; }
 .brand-tab.두루치기 { color: #c62828; }
 .brand-tab.두루치기.active { background: #ffebee; }
 
-.filters { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.filters { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
 .filters select, .filters input {
   padding: 9px 12px; border: 1px solid #c8a97a; border-radius: 6px;
   font-size: 13px; font-family: inherit; background: #fff;
@@ -128,9 +128,9 @@ h1 { text-align: center; font-size: 24px; color: #3b1f0e; margin-bottom: 6px; }
 
   <div class="brand-tabs">
     <button class="brand-tab all active" onclick="selectBrand('')">전체</button>
-    <button class="brand-tab 찜닭" onclick="selectBrand('밥꼬찜닭')">밥꼬찜닭</button>
     <button class="brand-tab 콩불" onclick="selectBrand('밥꼬콩불')">밥꼬콩불</button>
     <button class="brand-tab 두루치기" onclick="selectBrand('먹짱국물두루치기')">먹짱국물두루치기</button>
+    <button class="brand-tab 찜닭" onclick="selectBrand('밥꼬찜닭')">밥꼬찜닭</button>
   </div>
 
   <div class="filters">

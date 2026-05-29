@@ -218,7 +218,7 @@ function startMap() {
 }
 
 function loadStores(hasLoc) {
-  filteredStores = deduplicateByAddress([...STORES]);
+  filteredStores = [...STORES];
   geocodeAll(filteredStores, hasLoc);
 }
 
@@ -277,7 +277,15 @@ function renderListWithDist(stores) {
     const coord = storeCoords[i];
     const dist = coord ? calcDist(userLat, userLng, coord.lat, coord.lng) : 99999;
     return { ...s, origIdx: i, dist };
-  }).sort((a, b) => a.dist - b.dist);
+  }).sort((a, b) => {
+    const PRIORITY = {'밥꼬콩불': 0, '먹짱국물두루치기': 1, '밥꼬찜닭': 2};
+    const distDiff = a.dist - b.dist;
+    // 거리 차이가 100m 이내면 브랜드 우선순위로 정렬
+    if (Math.abs(distDiff) < 0.1) {
+      return (PRIORITY[a.brand] ?? 9) - (PRIORITY[b.brand] ?? 9);
+    }
+    return distDiff;
+  });
   document.getElementById('list-header').innerHTML =
     `<span class="loc-badge">내 위치 기준</span> 가까운 순 ${sortedList.length}개 매장`;
   document.getElementById('store-list').innerHTML = sortedList.map((s, listIdx) => `
@@ -362,10 +370,6 @@ function search() {
     if (keyword && !s.name.includes(keyword) && !s.address.includes(keyword)) return false;
     return true;
   });
-  // 전체 탭에서만 샵인샵 중복 주소 제거
-  if (!selectedBrand) {
-    filteredStores = deduplicateByAddress(filteredStores);
-  }
   activeOrigIdx = -1;
   geocodeAll(filteredStores, userLat !== null);
 }

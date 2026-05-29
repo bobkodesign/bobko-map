@@ -218,7 +218,7 @@ function startMap() {
 }
 
 function loadStores(hasLoc) {
-  filteredStores = [...STORES];
+  filteredStores = deduplicateByAddress([...STORES]);
   geocodeAll(filteredStores, hasLoc);
 }
 
@@ -334,6 +334,23 @@ function updateSigungu() {
     .filter(Boolean).sort().forEach(sg => sel.innerHTML += `<option value="${sg}">${sg}</option>`);
 }
 
+function deduplicateByAddress(stores) {
+  // 전체 탭일 때 같은 주소는 브랜드 우선순위(콩불>먹짱>찜닭)에 따라 1개만 표시
+  const BRAND_PRIORITY = { '밥꼬콩불': 0, '먹짱국물두루치기': 1, '밥꼬찜닭': 2 };
+  const addrMap = {};
+  stores.forEach(s => {
+    const key = s.address;
+    if (!addrMap[key]) {
+      addrMap[key] = s;
+    } else {
+      const curPriority = BRAND_PRIORITY[addrMap[key].brand] ?? 99;
+      const newPriority = BRAND_PRIORITY[s.brand] ?? 99;
+      if (newPriority < curPriority) addrMap[key] = s;
+    }
+  });
+  return Object.values(addrMap);
+}
+
 function search() {
   const sido = document.getElementById('sido').value;
   const sigungu = document.getElementById('sigungu').value;
@@ -345,6 +362,10 @@ function search() {
     if (keyword && !s.name.includes(keyword) && !s.address.includes(keyword)) return false;
     return true;
   });
+  // 전체 탭에서만 샵인샵 중복 주소 제거
+  if (!selectedBrand) {
+    filteredStores = deduplicateByAddress(filteredStores);
+  }
   activeOrigIdx = -1;
   geocodeAll(filteredStores, userLat !== null);
 }

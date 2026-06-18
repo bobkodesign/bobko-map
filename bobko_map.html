@@ -163,6 +163,7 @@ let map, markers = [], activeOrigIdx = -1, filteredStores = [];
 let selectedBrand = '', userLat = null, userLng = null, userMarker = null;
 let storeCoords = [];
 let sortedList = [];
+let geocodeGeneration = 0;
 
 function getBrandClass(brand) {
   if (brand.includes('찜닭')) return 'brand-찜닭';
@@ -223,12 +224,22 @@ function loadStores(hasLoc) {
 }
 
 function geocodeAll(stores, sortByDist) {
+  // 새 검색을 시작할 때마다 세대 번호를 올린다.
+  // 이전 세대(낡은 검색)에서 늦게 도착하는 geocode 응답은 전부 무시해서
+  // "다른 브랜드 탭을 눌렀는데 이전 탭의 마커가 섞여 보이는" 문제를 막는다.
+  geocodeGeneration++;
+  const myGeneration = geocodeGeneration;
+
   markers.forEach(m => m && m.setMap(null));
   markers = new Array(stores.length);
   storeCoords = new Array(stores.length);
   let resolved = 0;
   stores.forEach((store, i) => {
     naver.maps.Service.geocode({ query: store.address }, (status, res) => {
+      // 이 응답이 도착했을 때 이미 더 최신 검색(geocodeGeneration이 증가)이
+      // 시작된 상태라면, 이 콜백은 낡은 요청의 응답이므로 완전히 무시한다.
+      if (myGeneration !== geocodeGeneration) return;
+
       resolved++;
       if (status === naver.maps.Service.Status.OK && res.v2.addresses[0]) {
         const item = res.v2.addresses[0];

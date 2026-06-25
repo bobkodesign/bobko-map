@@ -3,313 +3,504 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>배달앱 광고비 지원 시뮬레이터 — 밥꼬디자인</title>
+<title>배달앱 광고지원 효과 시뮬레이터 — 밥꼬디자인</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Noto Sans KR', sans-serif; background: #f5f4f0; color: #1a1a18; font-size: 14px; line-height: 1.6; }
-  header { background: #fff; border-bottom: 0.5px solid #ddd; padding: 16px 24px; display: flex; align-items: center; gap: 12px; }
-  header h1 { font-size: 16px; font-weight: 500; }
-  header .badge { font-size: 11px; background: #fff3e0; color: #e65100; padding: 3px 10px; border-radius: 20px; }
-  .container { max-width: 900px; margin: 0 auto; padding: 24px 16px; }
-  .tab-row { display: flex; gap: 6px; margin-bottom: 20px; }
-  .tab-btn { padding: 7px 18px; border-radius: 20px; border: 0.5px solid #ccc; background: transparent; cursor: pointer; font-size: 13px; color: #666; transition: all 0.15s; }
-  .tab-btn.active { background: #e3f2fd; color: #1565c0; border-color: transparent; font-weight: 500; }
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  @media(max-width:600px) { .grid2 { grid-template-columns: 1fr; } }
-  .panel { background: #fff; border-radius: 12px; border: 0.5px solid #e0e0e0; padding: 20px; }
-  .panel-title { font-size: 11px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 14px; }
-  .slider-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-  .slider-label { font-size: 12px; color: #555; min-width: 130px; }
-  input[type=range] { flex: 1; accent-color: #1565c0; height: 4px; cursor: pointer; }
-  .slider-val { font-size: 12px; font-weight: 500; min-width: 72px; text-align: right; color: #1a1a18; }
-  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 16px; }
-  .card { background: #f8f8f6; border-radius: 8px; padding: 14px 16px; }
-  .card-label { font-size: 11px; color: #888; margin-bottom: 4px; }
-  .card-val { font-size: 19px; font-weight: 500; color: #1a1a18; }
-  .card-sub { font-size: 10px; color: #aaa; margin-top: 2px; }
-  .verdict { padding: 12px 16px; border-radius: 8px; font-size: 13px; line-height: 1.65; margin-bottom: 20px; }
-  .verdict.good { background: #e8f5e9; color: #2e7d32; }
-  .verdict.mid { background: #fff8e1; color: #f57f17; }
-  .verdict.bad { background: #ffebee; color: #c62828; }
-  .chart-wrap { position: relative; height: 200px; }
-  hr { border: none; border-top: 0.5px solid #e0e0e0; margin: 20px 0; }
-  .section-title { font-size: 11px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
-  footer { text-align: center; font-size: 11px; color: #aaa; padding: 24px; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Noto Sans KR',sans-serif;background:#f5f4f0;color:#1a1a18;font-size:14px;line-height:1.6}
+header{background:#fff;border-bottom:1px solid #e0e0e0;padding:16px 24px;display:flex;align-items:center;gap:12px}
+header h1{font-size:17px;font-weight:600}
+.badge{font-size:11px;background:#fff3e0;color:#e65100;padding:3px 10px;border-radius:20px}
+.container{max-width:860px;margin:0 auto;padding:24px 16px}
+.section{background:#fff;border-radius:12px;border:1px solid #e8e8e8;padding:20px 22px;margin-bottom:14px}
+.section-title{font-size:12px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.section-title .num{background:#1a1a18;color:#fff;border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0}
+.row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.row:last-child{margin-bottom:0}
+.label{font-size:13px;color:#444;flex:1}
+.label small{font-size:11px;color:#aaa;display:block}
+input[type=range]{width:140px;accent-color:#e65100;cursor:pointer}
+.val{font-size:14px;font-weight:600;color:#1a1a18;min-width:82px;text-align:right}
+.fixed-badge{font-size:11px;background:#f0f0ee;color:#666;padding:2px 8px;border-radius:10px;margin-left:4px}
+hr{border:none;border-top:1px solid #eee;margin:14px 0}
+.result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:10px;margin-bottom:14px}
+.card{background:#f8f7f4;border-radius:10px;padding:14px 16px;position:relative}
+.card.highlight{background:#fff8f0;border:1px solid #ffd0a0}
+.card.green{background:#f0faf4;border:1px solid #b2dfcc}
+.card-label{font-size:11px;color:#999;margin-bottom:4px;display:flex;align-items:center;gap:5px}
+.card-val{font-size:20px;font-weight:600;color:#1a1a18}
+.card-sub{font-size:11px;color:#bbb;margin-top:2px}
+
+/* ── 툴팁 ── */
+.tip-icon{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;background:#ddd;color:#777;font-size:10px;font-weight:700;cursor:default;flex-shrink:0;transition:background .15s}
+.tip-icon:hover{background:#bbb;color:#fff}
+.tip-wrap{position:relative;display:inline-flex}
+.tip-box{
+  display:none;
+  position:absolute;
+  bottom:calc(100% + 8px);
+  left:50%;
+  transform:translateX(-50%);
+  width:240px;
+  background:#1a1a18;
+  color:#f0f0ee;
+  font-size:11.5px;
+  line-height:1.65;
+  padding:10px 12px;
+  border-radius:8px;
+  z-index:999;
+  pointer-events:none;
+  white-space:pre-line;
+  box-shadow:0 4px 16px rgba(0,0,0,.22);
+}
+.tip-box::after{
+  content:'';
+  position:absolute;
+  top:100%;left:50%;
+  transform:translateX(-50%);
+  border:5px solid transparent;
+  border-top-color:#1a1a18;
+}
+.tip-wrap:hover .tip-box{display:block}
+
+.verdict{padding:13px 16px;border-radius:10px;font-size:13px;line-height:1.7;margin-bottom:14px}
+.verdict.good{background:#edf7ed;color:#2e7d32;border:1px solid #c8e6c9}
+.verdict.mid{background:#fffde7;color:#f57f17;border:1px solid #fff59d}
+.verdict.bad{background:#ffeaea;color:#c62828;border:1px solid #ffcdd2}
+.chart-wrap{height:190px;position:relative}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.note{font-size:11px;color:#aaa;line-height:1.6;padding:10px 14px;background:#fafafa;border-radius:8px;border:1px solid #eee}
+.divider-label{font-size:11px;color:#ccc;text-align:center;margin:4px 0 12px;letter-spacing:.04em}
+@media(max-width:560px){.grid2{grid-template-columns:1fr}input[type=range]{width:100px}.tip-box{left:0;transform:none}}
 </style>
 </head>
 <body>
 <header>
-  <h1>배달앱 광고비 지원 시뮬레이터</h1>
+  <h1>📊 배달앱 광고지원 효과 시뮬레이터</h1>
   <span class="badge">밥꼬디자인 내부용</span>
 </header>
 <div class="container">
 
-  <div class="tab-row">
-    <button class="tab-btn active" onclick="setMode('cpc')" id="tab-cpc">클릭광고 (CPC)</button>
-    <button class="tab-btn" onclick="setMode('discount')" id="tab-discount">매장할인 쿠폰</button>
-  </div>
-
-  <div class="grid2" style="margin-bottom:16px">
-    <div class="panel">
-      <div class="panel-title">광고비 설정</div>
-      <div class="slider-row">
-        <span class="slider-label">본사 지원금</span>
-        <input type="range" id="support" min="30000" max="200000" step="10000" value="100000" oninput="calc()">
-        <span class="slider-val" id="out-support">100,000원</span>
-      </div>
-      <div class="slider-row">
-        <span class="slider-label">매장 자부담 비율</span>
-        <input type="range" id="copay" min="0" max="100" step="10" value="0" oninput="calc()">
-        <span class="slider-val" id="out-copay">0%</span>
-      </div>
-      <div class="slider-row">
-        <span class="slider-label">파일럿 매장 수</span>
-        <input type="range" id="stores" min="1" max="10" step="1" value="3" oninput="calc()">
-        <span class="slider-val" id="out-stores">3개</span>
-      </div>
+  <!-- 섹션 1 -->
+  <div class="section">
+    <div class="section-title"><span class="num">1</span> 배민 클릭광고 (우리가게클릭) 설정</div>
+    <div class="row">
+      <span class="label">본사 지원금 <small>매장 1개 기준</small></span>
+      <input type="range" id="cpc-budget" min="30000" max="200000" step="10000" value="100000" oninput="calc()">
+      <span class="val" id="out-cpc-budget">100,000원</span>
     </div>
-
-    <div class="panel" id="cpc-section">
-      <div class="panel-title">클릭광고 효과 변수</div>
-      <div class="slider-row">
-        <span class="slider-label">예상 CPC 단가</span>
-        <input type="range" id="cpc" min="50" max="500" step="10" value="150" oninput="calc()">
-        <span class="slider-val" id="out-cpc">150원</span>
-      </div>
-      <div class="slider-row">
-        <span class="slider-label">클릭→주문 전환율</span>
-        <input type="range" id="cvr" min="1" max="20" step="1" value="5" oninput="calc()">
-        <span class="slider-val" id="out-cvr">5%</span>
-      </div>
-      <div class="slider-row">
-        <span class="slider-label">객단가 (평균)</span>
-        <input type="range" id="aov" min="10000" max="40000" step="1000" value="18000" oninput="calc()">
-        <span class="slider-val" id="out-aov">18,000원</span>
-      </div>
-      <div class="slider-row">
-        <span class="slider-label">식재료 구매 비중</span>
-        <input type="range" id="purchase" min="0" max="100" step="5" value="30" oninput="calc()">
-        <span class="slider-val" id="out-purchase">30%</span>
-      </div>
-      <div class="slider-row">
-        <span class="slider-label">본사 마진율</span>
-        <input type="range" id="margin" min="5" max="40" step="1" value="20" oninput="calc()">
-        <span class="slider-val" id="out-margin">20%</span>
-      </div>
+    <div class="row">
+      <span class="label">클릭당 단가 (CPC) <small>배민 설정범위: 200~600원</small></span>
+      <input type="range" id="cpc-unit" min="200" max="600" step="50" value="350" oninput="calc()">
+      <span class="val" id="out-cpc-unit">350원</span>
     </div>
-
-    <div class="panel" id="discount-section" style="display:none">
-      <div class="panel-title">할인쿠폰 효과 변수</div>
-      <div class="slider-row">
-        <span class="slider-label">쿠폰 할인액</span>
-        <input type="range" id="disc-amt" min="500" max="5000" step="500" value="2000" oninput="calc()">
-        <span class="slider-val" id="out-disc-amt">2,000원</span>
-      </div>
-      <div class="slider-row">
-        <span class="slider-label">쿠폰 발행 수</span>
-        <input type="range" id="coupon-cnt" min="10" max="200" step="5" value="50" oninput="calc()">
-        <span class="slider-val" id="out-coupon-cnt">50장</span>
-      </div>
-      <div class="slider-row">
-        <span class="slider-label">쿠폰 사용률</span>
-        <input type="range" id="coup-use" min="5" max="80" step="5" value="30" oninput="calc()">
-        <span class="slider-val" id="out-coup-use">30%</span>
-      </div>
-      <div class="slider-row">
-        <span class="slider-label">객단가 (평균)</span>
-        <input type="range" id="aov2" min="10000" max="40000" step="1000" value="18000" oninput="calc()">
-        <span class="slider-val" id="out-aov2">18,000원</span>
-      </div>
-      <div class="slider-row">
-        <span class="slider-label">식재료 구매 비중</span>
-        <input type="range" id="purchase2" min="0" max="100" step="5" value="30" oninput="calc()">
-        <span class="slider-val" id="out-purchase2">30%</span>
-      </div>
-      <div class="slider-row">
-        <span class="slider-label">본사 마진율</span>
-        <input type="range" id="margin2" min="5" max="40" step="1" value="20" oninput="calc()">
-        <span class="slider-val" id="out-margin2">20%</span>
-      </div>
+    <div class="row">
+      <span class="label">클릭→주문 전환율 <small>배민 실측: 6~12%, 평균 8%</small></span>
+      <input type="range" id="cpc-cvr" min="3" max="15" step="1" value="8" oninput="calc()">
+      <span class="val" id="out-cpc-cvr">8%</span>
     </div>
   </div>
 
-  <hr>
-  <div class="section-title">결과 요약 — 매장 1개 기준</div>
-  <div class="cards">
-    <div class="card"><div class="card-label">총 광고예산</div><div class="card-val" id="r-budget">-</div><div class="card-sub" id="r-budget-sub">-</div></div>
-    <div class="card"><div class="card-label" id="r-vol-label">유입 클릭 수</div><div class="card-val" id="r-vol">-</div><div class="card-sub" id="r-vol-sub">-</div></div>
-    <div class="card"><div class="card-label">예상 주문 증가</div><div class="card-val" id="r-orders">-</div><div class="card-sub">건/월</div></div>
-    <div class="card"><div class="card-label">추가 매출</div><div class="card-val" id="r-sales">-</div><div class="card-sub">원/월</div></div>
-    <div class="card"><div class="card-label">본사 물품 추가구매</div><div class="card-val" id="r-hq-buy">-</div><div class="card-sub">원/월 (추정)</div></div>
-    <div class="card"><div class="card-label">본사 회수 마진</div><div class="card-val" id="r-hq-margin">-</div><div class="card-sub">원/월</div></div>
-    <div class="card"><div class="card-label">손익분기 기간</div><div class="card-val" id="r-bep">-</div><div class="card-sub">본사 기준</div></div>
-    <div class="card"><div class="card-label">파일럿 총 지원비</div><div class="card-val" id="r-total">-</div><div class="card-sub" id="r-total-sub">-</div></div>
+  <!-- 섹션 2 -->
+  <div class="section">
+    <div class="section-title"><span class="num">2</span> 배민 즉시할인 설정</div>
+    <div class="row">
+      <span class="label">본사 지원금 <small>매장 1개 기준</small></span>
+      <input type="range" id="disc-budget" min="0" max="100000" step="10000" value="0" oninput="calc()">
+      <span class="val" id="out-disc-budget">0원 (미사용)</span>
+    </div>
+    <div class="row">
+      <span class="label">할인 금액/건 <small>통상 1,000~3,000원</small></span>
+      <input type="range" id="disc-unit" min="500" max="5000" step="500" value="2000" oninput="calc()">
+      <span class="val" id="out-disc-unit">2,000원</span>
+    </div>
+    <div class="row">
+      <span class="label">할인 적용 후 추가주문 증가율 <small>즉시할인 도입 시 전환율 상승 효과</small></span>
+      <input type="range" id="disc-lift" min="5" max="50" step="5" value="20" oninput="calc()">
+      <span class="val" id="out-disc-lift">+20%</span>
+    </div>
   </div>
 
-  <div id="verdict-box" class="verdict mid"></div>
+  <!-- 섹션 3 -->
+  <div class="section">
+    <div class="section-title"><span class="num">3</span> 소스 소진 및 매장 공통 변수</div>
+    <div class="row">
+      <span class="label">매장 평균 객단가</span>
+      <input type="range" id="aov" min="10000" max="35000" step="1000" value="18000" oninput="calc()">
+      <span class="val" id="out-aov">18,000원</span>
+    </div>
+    <div class="row">
+      <span class="label">주문 1건당 소스 소진량</span>
+      <span class="val" style="flex:1;text-align:left;color:#aaa">110ml <span class="fixed-badge">고정</span></span>
+    </div>
+    <div class="row">
+      <span class="label">소스 1통 용량</span>
+      <span class="val" style="flex:1;text-align:left;color:#aaa">10kg <span class="fixed-badge">고정</span></span>
+    </div>
+    <div class="row">
+      <span class="label">소스 1통 공급가</span>
+      <span class="val" style="flex:1;text-align:left;color:#aaa">92,300원 <span class="fixed-badge">고정</span></span>
+    </div>
+    <div class="row">
+      <span class="label">본사 소스 마진율</span>
+      <input type="range" id="sauce-margin" min="5" max="50" step="5" value="20" oninput="calc()">
+      <span class="val" id="out-sauce-margin">20%</span>
+    </div>
+    <div class="row">
+      <span class="label">파일럿 매장 수</span>
+      <input type="range" id="stores" min="1" max="10" step="1" value="3" oninput="calc()">
+      <span class="val" id="out-stores">3개</span>
+    </div>
+  </div>
 
-  <hr>
-  <div class="section-title">매장 입장 — 10만원 지원의 체감 가치</div>
-  <div class="cards">
-    <div class="card"><div class="card-label">광고비 절감</div><div class="card-val" id="f-save">-</div></div>
-    <div class="card"><div class="card-label">예상 추가 매출</div><div class="card-val" id="f-sales">-</div></div>
-    <div class="card"><div class="card-label">실질 혜택 합계</div><div class="card-val" id="f-total">-</div></div>
-    <div class="card"><div class="card-label">매력도</div><div class="card-val" id="f-rating" style="font-size:13px">-</div></div>
+  <!-- 결과 -->
+  <div class="divider-label">▼ 결과</div>
+
+  <div class="section">
+    <div class="section-title">매장 1개 기준 — 이번 달 효과</div>
+    <div class="result-grid">
+
+      <div class="card">
+        <div class="card-label">
+          총 광고 지원금
+          <span class="tip-wrap">
+            <span class="tip-icon">?</span>
+            <span class="tip-box" id="tip-total-budget">계산 중...</span>
+          </span>
+        </div>
+        <div class="card-val" id="r-total-budget">-</div>
+        <div class="card-sub">클릭광고 + 즉시할인</div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">
+          클릭광고 유입 클릭
+          <span class="tip-wrap">
+            <span class="tip-icon">?</span>
+            <span class="tip-box" id="tip-clicks">계산 중...</span>
+          </span>
+        </div>
+        <div class="card-val" id="r-clicks">-</div>
+        <div class="card-sub" id="r-clicks-sub">-</div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">
+          클릭광고 증가 주문
+          <span class="tip-wrap">
+            <span class="tip-icon">?</span>
+            <span class="tip-box" id="tip-orders-cpc">계산 중...</span>
+          </span>
+        </div>
+        <div class="card-val" id="r-orders-cpc">-</div>
+        <div class="card-sub">건/월</div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">
+          즉시할인 증가 주문
+          <span class="tip-wrap">
+            <span class="tip-icon">?</span>
+            <span class="tip-box" id="tip-orders-disc">계산 중...</span>
+          </span>
+        </div>
+        <div class="card-val" id="r-orders-disc">-</div>
+        <div class="card-sub">건/월</div>
+      </div>
+
+    </div>
+    <hr>
+    <div class="result-grid">
+
+      <div class="card highlight">
+        <div class="card-label">
+          총 증가 주문
+          <span class="tip-wrap">
+            <span class="tip-icon">?</span>
+            <span class="tip-box" id="tip-orders-total">계산 중...</span>
+          </span>
+        </div>
+        <div class="card-val" id="r-orders-total">-</div>
+        <div class="card-sub">건/월</div>
+      </div>
+
+      <div class="card highlight">
+        <div class="card-label">
+          추가 소스 소진량
+          <span class="tip-wrap">
+            <span class="tip-icon">?</span>
+            <span class="tip-box" id="tip-sauce-ml">계산 중...</span>
+          </span>
+        </div>
+        <div class="card-val" id="r-sauce-ml">-</div>
+        <div class="card-sub" id="r-sauce-bottles">-</div>
+      </div>
+
+      <div class="card green">
+        <div class="card-label">
+          소스 추가 판매 금액
+          <span class="tip-wrap">
+            <span class="tip-icon">?</span>
+            <span class="tip-box" id="tip-sauce-revenue">계산 중...</span>
+          </span>
+        </div>
+        <div class="card-val" id="r-sauce-revenue">-</div>
+        <div class="card-sub">원/월</div>
+      </div>
+
+      <div class="card green">
+        <div class="card-label">
+          본사 회수 마진
+          <span class="tip-wrap">
+            <span class="tip-icon">?</span>
+            <span class="tip-box" id="tip-hq-margin">계산 중...</span>
+          </span>
+        </div>
+        <div class="card-val" id="r-hq-margin">-</div>
+        <div class="card-sub" id="r-hq-margin-sub">소스 마진만</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="verdict-box" class="verdict mid">계산 중...</div>
+
+  <div class="section">
+    <div class="section-title">파일럿 전체 — 손익 요약</div>
+    <div class="result-grid">
+
+      <div class="card">
+        <div class="card-label">
+          파일럿 총 지원 비용
+          <span class="tip-wrap">
+            <span class="tip-icon">?</span>
+            <span class="tip-box" id="tip-p-cost">계산 중...</span>
+          </span>
+        </div>
+        <div class="card-val" id="p-cost">-</div>
+        <div class="card-sub" id="p-cost-sub">-</div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">
+          파일럿 총 소스 마진
+          <span class="tip-wrap">
+            <span class="tip-icon">?</span>
+            <span class="tip-box" id="tip-p-margin">계산 중...</span>
+          </span>
+        </div>
+        <div class="card-val" id="p-margin">-</div>
+        <div class="card-sub">원/월</div>
+      </div>
+
+      <div class="card green">
+        <div class="card-label">
+          손익분기 기간
+          <span class="tip-wrap">
+            <span class="tip-icon">?</span>
+            <span class="tip-box" id="tip-p-bep">계산 중...</span>
+          </span>
+        </div>
+        <div class="card-val" id="p-bep">-</div>
+        <div class="card-sub">지원금 회수 기준</div>
+      </div>
+
+      <div class="card green">
+        <div class="card-label">
+          6개월 누적 마진
+          <span class="tip-wrap">
+            <span class="tip-icon">?</span>
+            <span class="tip-box" id="tip-p-6m">계산 중...</span>
+          </span>
+        </div>
+        <div class="card-val" id="p-6m">-</div>
+        <div class="card-sub">vs 지원금 비교</div>
+      </div>
+
+    </div>
   </div>
 
   <div class="grid2">
-    <div class="panel">
-      <div class="panel-title">지원금 vs 마진 회수</div>
-      <div class="chart-wrap"><canvas id="chartBar" role="img" aria-label="지원금 대비 마진 회수 비교">지원금, 마진 비교 차트</canvas></div>
+    <div class="section">
+      <div class="section-title">소스통 판매량 변화</div>
+      <div class="chart-wrap"><canvas id="chartSauce" role="img" aria-label="소스 판매량 차트"></canvas></div>
     </div>
-    <div class="panel">
-      <div class="panel-title">손익분기 시뮬레이션</div>
-      <div class="chart-wrap"><canvas id="chartBep" role="img" aria-label="월별 누적 마진 vs 지원금">손익분기 추이 차트</canvas></div>
+    <div class="section">
+      <div class="section-title">손익분기 시뮬레이션 (파일럿 전체)</div>
+      <div class="chart-wrap"><canvas id="chartBep" role="img" aria-label="손익분기 차트"></canvas></div>
     </div>
   </div>
 
+  <div class="note">
+    ※ CPC 단가·전환율은 배민 공식 자료 및 2024년 소상공인 실사례 기반 추정값입니다.<br>
+    ※ 소스 110ml/건, 1통 10kg(10,000ml), 공급가 92,300원은 고정값으로 계산됩니다.<br>
+    ※ 각 결과 카드의 <strong>?</strong> 아이콘에 마우스를 올리면 산출 근거를 확인할 수 있습니다.
+  </div>
+
 </div>
-<footer>밥꼬디자인 내부 전용 시뮬레이터 · 수치는 추정값이며 실제 결과와 다를 수 있습니다</footer>
 
 <script>
-let mode = 'cpc';
-let barChart, bepChart;
+let sauceChart, bepChart;
+const SAUCE_ML = 110, SAUCE_CAP = 10000, SAUCE_PRICE = 92300;
+function fmt(n){return Math.round(n).toLocaleString('ko-KR')}
+function fmtML(ml){return ml>=1000?(ml/1000).toFixed(1)+'L':Math.round(ml)+'ml'}
+function tip(id, txt){document.getElementById(id).textContent = txt}
 
-function setMode(m) {
-  mode = m;
-  document.getElementById('cpc-section').style.display = m === 'cpc' ? '' : 'none';
-  document.getElementById('discount-section').style.display = m === 'discount' ? '' : 'none';
-  document.getElementById('tab-cpc').className = 'tab-btn' + (m === 'cpc' ? ' active' : '');
-  document.getElementById('tab-discount').className = 'tab-btn' + (m === 'discount' ? ' active' : '');
-  calc();
-}
+function calc(){
+  const cpcBudget = +document.getElementById('cpc-budget').value;
+  const cpcUnit   = +document.getElementById('cpc-unit').value;
+  const cpcCvr    = +document.getElementById('cpc-cvr').value/100;
+  const discBudget= +document.getElementById('disc-budget').value;
+  const discUnit  = +document.getElementById('disc-unit').value;
+  const discLift  = +document.getElementById('disc-lift').value/100;
+  const aov       = +document.getElementById('aov').value;
+  const sauceMgn  = +document.getElementById('sauce-margin').value/100;
+  const stores    = +document.getElementById('stores').value;
 
-function fmt(n) { return Math.round(n).toLocaleString('ko-KR'); }
+  document.getElementById('out-cpc-budget').textContent  = fmt(cpcBudget)+'원';
+  document.getElementById('out-cpc-unit').textContent    = fmt(cpcUnit)+'원';
+  document.getElementById('out-cpc-cvr').textContent     = (cpcCvr*100)+'%';
+  document.getElementById('out-disc-budget').textContent = discBudget===0?'0원 (미사용)':fmt(discBudget)+'원';
+  document.getElementById('out-disc-unit').textContent   = fmt(discUnit)+'원';
+  document.getElementById('out-disc-lift').textContent   = '+'+(discLift*100)+'%';
+  document.getElementById('out-aov').textContent         = fmt(aov)+'원';
+  document.getElementById('out-sauce-margin').textContent= (sauceMgn*100)+'%';
+  document.getElementById('out-stores').textContent      = stores+'개';
 
-function calc() {
-  const support = +document.getElementById('support').value;
-  const copay = +document.getElementById('copay').value / 100;
-  const stores = +document.getElementById('stores').value;
-  document.getElementById('out-support').textContent = fmt(support) + '원';
-  document.getElementById('out-copay').textContent = Math.round(copay * 100) + '%';
-  document.getElementById('out-stores').textContent = stores + '개';
+  // ── 계산 ──
+  const clicks      = Math.round(cpcBudget / cpcUnit);
+  const ordersCpc   = Math.round(clicks * cpcCvr);
+  const discMax     = discBudget > 0 ? Math.floor(discBudget / discUnit) : 0;
+  const ordersDisc  = Math.round(discMax * discLift);
+  const ordersTotal = ordersCpc + ordersDisc;
+  const sauceMlTot  = ordersTotal * SAUCE_ML;
+  const sauceBottles= sauceMlTot / SAUCE_CAP;
+  const sauceRev    = sauceBottles * SAUCE_PRICE;
+  const hqMargin    = sauceRev * sauceMgn;
 
-  const totalBudget = copay > 0 ? support / (1 - copay) : support;
-  const selfPay = totalBudget - support;
+  const budgetStore = cpcBudget + discBudget;
+  const budgetAll   = budgetStore * stores;
+  const marginAll   = hqMargin * stores;
+  const bep         = marginAll > 0 ? Math.ceil(budgetAll / marginAll) : 99;
+  const margin6m    = marginAll * 6;
 
-  let clicks, orders, sales, hqBuy, margin;
+  // ── 결과 카드 값 ──
+  document.getElementById('r-total-budget').textContent  = fmt(budgetStore)+'원';
+  document.getElementById('r-clicks').textContent        = fmt(clicks)+'회';
+  document.getElementById('r-clicks-sub').textContent    = '클릭당 '+fmt(cpcUnit)+'원';
+  document.getElementById('r-orders-cpc').textContent    = fmt(ordersCpc);
+  document.getElementById('r-orders-disc').textContent   = discBudget>0?fmt(ordersDisc):'0 (미사용)';
+  document.getElementById('r-orders-total').textContent  = fmt(ordersTotal)+'건';
+  document.getElementById('r-sauce-ml').textContent      = fmtML(sauceMlTot);
+  document.getElementById('r-sauce-bottles').textContent = '≈ '+sauceBottles.toFixed(2)+'통 추가 판매';
+  document.getElementById('r-sauce-revenue').textContent = fmt(sauceRev)+'원';
+  document.getElementById('r-hq-margin').textContent     = fmt(hqMargin)+'원';
+  document.getElementById('r-hq-margin-sub').textContent = '마진율 '+(sauceMgn*100)+'%';
+  document.getElementById('p-cost').textContent          = fmt(budgetAll)+'원';
+  document.getElementById('p-cost-sub').textContent      = stores+'개 × '+fmt(budgetStore)+'원';
+  document.getElementById('p-margin').textContent        = fmt(marginAll)+'원';
+  document.getElementById('p-bep').textContent           = bep<=24?bep+'개월':'24개월+';
+  document.getElementById('p-6m').textContent            = fmt(margin6m)+'원';
 
-  if (mode === 'cpc') {
-    const cpc = +document.getElementById('cpc').value;
-    const cvr = +document.getElementById('cvr').value / 100;
-    const aov = +document.getElementById('aov').value;
-    const purchase = +document.getElementById('purchase').value / 100;
-    const mgn = +document.getElementById('margin').value / 100;
-    document.getElementById('out-cpc').textContent = fmt(cpc) + '원';
-    document.getElementById('out-cvr').textContent = Math.round(cvr * 100) + '%';
-    document.getElementById('out-aov').textContent = fmt(aov) + '원';
-    document.getElementById('out-purchase').textContent = Math.round(purchase * 100) + '%';
-    document.getElementById('out-margin').textContent = Math.round(mgn * 100) + '%';
-    clicks = Math.round(totalBudget / cpc);
-    orders = Math.round(clicks * cvr);
-    sales = orders * aov;
-    hqBuy = sales * purchase;
-    margin = hqBuy * mgn;
-    document.getElementById('r-vol-label').textContent = '유입 클릭 수';
-    document.getElementById('r-vol').textContent = fmt(clicks) + '회';
-    document.getElementById('r-vol-sub').textContent = '클릭당 ' + fmt(cpc) + '원';
+  // ── 툴팁 산출근거 ──
+  tip('tip-total-budget',
+    `클릭광고 지원금 ${fmt(cpcBudget)}원\n+ 즉시할인 지원금 ${fmt(discBudget)}원\n= 합계 ${fmt(budgetStore)}원\n\n매장 1개에 이번 달 투입되는 본사 총 지원금입니다.`);
+
+  tip('tip-clicks',
+    `지원금 ÷ CPC 단가 = 클릭 수\n${fmt(cpcBudget)}원 ÷ ${fmt(cpcUnit)}원 = ${fmt(clicks)}회\n\n배민 우가클 CPC 설정범위: 200~600원\n(출처: 배민 공식 상품 안내, 2022~2024)`);
+
+  tip('tip-orders-cpc',
+    `유입 클릭 × 전환율 = 주문 수\n${fmt(clicks)}회 × ${Math.round(cpcCvr*100)}% = ${fmt(ordersCpc)}건\n\n전환율 근거: 배민 우가클 실측\n업종별 6~12%, 평균 8%\n(출처: 디지털투데이, 2022.09)`);
+
+  if(discBudget > 0){
+    tip('tip-orders-disc',
+      `할인 지원금 ÷ 할인단가 = 최대 지원 건수\n${fmt(discBudget)}원 ÷ ${fmt(discUnit)}원 = ${fmt(discMax)}건 가능\n\n그 중 신규유입 증가율(${Math.round(discLift*100)}%) 적용\n→ 추가 주문 ${fmt(ordersDisc)}건\n\n즉시할인은 2025.07 배민 공식 도입.\n할인 적용 시 전환율·재주문율 상승 기대.`);
   } else {
-    const discAmt = +document.getElementById('disc-amt').value;
-    const couponCnt = +document.getElementById('coupon-cnt').value;
-    const coupUse = +document.getElementById('coup-use').value / 100;
-    const aov2 = +document.getElementById('aov2').value;
-    const purchase2 = +document.getElementById('purchase2').value / 100;
-    const mgn2 = +document.getElementById('margin2').value / 100;
-    document.getElementById('out-disc-amt').textContent = fmt(discAmt) + '원';
-    document.getElementById('out-coupon-cnt').textContent = fmt(couponCnt) + '장';
-    document.getElementById('out-coup-use').textContent = Math.round(coupUse * 100) + '%';
-    document.getElementById('out-aov2').textContent = fmt(aov2) + '원';
-    document.getElementById('out-purchase2').textContent = Math.round(purchase2 * 100) + '%';
-    document.getElementById('out-margin2').textContent = Math.round(mgn2 * 100) + '%';
-    const issuable = Math.min(couponCnt, Math.floor(support / discAmt));
-    orders = Math.round(issuable * coupUse);
-    sales = orders * aov2;
-    hqBuy = sales * purchase2;
-    margin = hqBuy * mgn2;
-    document.getElementById('r-vol-label').textContent = '발행 가능 쿠폰';
-    document.getElementById('r-vol').textContent = fmt(issuable) + '장';
-    document.getElementById('r-vol-sub').textContent = '할인 ' + fmt(discAmt) + '원/장';
+    tip('tip-orders-disc',
+      `즉시할인 지원금이 0원으로 설정되어\n해당 항목은 계산에서 제외됩니다.\n\n섹션 ②에서 즉시할인 지원금을 설정하면\n추가 주문 증가 효과를 확인할 수 있습니다.`);
   }
 
-  const bep = margin > 0 ? Math.ceil(support / margin) : 99;
+  tip('tip-orders-total',
+    `클릭광고 주문 ${fmt(ordersCpc)}건\n+ 즉시할인 주문 ${fmt(ordersDisc)}건\n= 총 ${fmt(ordersTotal)}건/월\n\n이 주문 수가 소스 소진량 계산의 기준이 됩니다.`);
 
-  document.getElementById('r-budget').textContent = fmt(totalBudget) + '원';
-  document.getElementById('r-budget-sub').textContent = copay > 0 ? '자부담 ' + fmt(selfPay) + '원 포함' : '전액 본사 지원';
-  document.getElementById('r-orders').textContent = fmt(orders);
-  document.getElementById('r-sales').textContent = fmt(sales);
-  document.getElementById('r-hq-buy').textContent = fmt(hqBuy);
-  document.getElementById('r-hq-margin').textContent = fmt(margin);
-  document.getElementById('r-bep').textContent = bep <= 24 ? bep + '개월' : '24개월+';
-  document.getElementById('r-total').textContent = fmt(support * stores) + '원';
-  document.getElementById('r-total-sub').textContent = stores + '개 × ' + fmt(support) + '원';
+  tip('tip-sauce-ml',
+    `총 주문 × 1건당 소진량 = 소진 총량\n${fmt(ordersTotal)}건 × 110ml = ${fmt(sauceMlTot)}ml\n= ${fmtML(sauceMlTot)}\n\n1통 용량: 10kg = 10,000ml\n추가 판매 통수: ${sauceBottles.toFixed(2)}통\n\n110ml/건은 밥꼬콩불 1인분 기준 소진량입니다.`);
 
-  document.getElementById('f-save').textContent = fmt(support) + '원';
-  document.getElementById('f-sales').textContent = fmt(Math.round(sales * 0.7)) + '원';
-  document.getElementById('f-total').textContent = fmt(Math.round(support + sales * 0.7)) + '원';
+  tip('tip-sauce-revenue',
+    `추가 판매 통수 × 소스 공급가\n${sauceBottles.toFixed(2)}통 × 92,300원\n= ${fmt(sauceRev)}원\n\n소스 공급가 92,300원/10kg은\n본사 가맹점 공급 기준 단가입니다.`);
 
-  const storeTotal = support + sales * 0.7;
-  let rating, rc;
-  if (storeTotal >= 500000) { rating = '★★★★★ 매우 매력'; rc = '#2e7d32'; }
-  else if (storeTotal >= 300000) { rating = '★★★★ 충분히 매력'; rc = '#2e7d32'; }
-  else if (storeTotal >= 150000) { rating = '★★★ 보통'; rc = '#e65100'; }
-  else { rating = '★★ 아직 부족'; rc = '#c62828'; }
-  const fr = document.getElementById('f-rating');
-  fr.textContent = rating; fr.style.color = rc;
+  tip('tip-hq-margin',
+    `소스 판매금액 × 마진율 = 본사 마진\n${fmt(sauceRev)}원 × ${Math.round(sauceMgn*100)}%\n= ${fmt(hqMargin)}원/월\n\n※ 소스 마진만 계산한 수치입니다.\n기타 물품·로열티 수익은 미포함.`);
 
-  const vBox = document.getElementById('verdict-box');
-  if (bep <= 3) { vBox.className = 'verdict good'; vBox.textContent = `본사 기준 약 ${bep}개월 내 손익분기. 10만원 지원은 충분히 합리적입니다. 파일럿 효과 확인 후 확대를 검토하세요.`; }
-  else if (bep <= 6) { vBox.className = 'verdict mid'; vBox.textContent = `손익분기까지 약 ${bep}개월 소요. 물품 구매 비중을 높이는 조건(특정 물품 사용 매장만 지원 등)을 붙이면 ROI가 개선됩니다.`; }
-  else { vBox.className = 'verdict bad'; vBox.textContent = `손익분기까지 ${bep}개월 이상. 조건부 지원 또는 지원액 조정이 필요합니다.`; }
+  tip('tip-p-cost',
+    `매장당 지원금 × 파일럿 매장 수\n${fmt(budgetStore)}원 × ${stores}개\n= ${fmt(budgetAll)}원\n\n이 금액이 파일럿 기간 총 지출입니다.`);
 
-  updateCharts(support, margin);
+  tip('tip-p-margin',
+    `매장 1개 소스 마진 × 파일럿 매장 수\n${fmt(hqMargin)}원 × ${stores}개\n= ${fmt(marginAll)}원/월\n\n소스 마진만 반영한 월간 회수액입니다.`);
+
+  tip('tip-p-bep',
+    `총 지원금 ÷ 월 마진 = 손익분기 개월\n${fmt(budgetAll)}원 ÷ ${fmt(marginAll)}원\n= ${bep<=24?bep+'개월':'24개월 초과'}\n\n마진이 지원금 총액을 회수하는 데\n필요한 최소 기간입니다.`);
+
+  tip('tip-p-6m',
+    `월 마진 × 6개월\n${fmt(marginAll)}원 × 6개월\n= ${fmt(margin6m)}원\n\n총 지원금 ${fmt(budgetAll)}원 대비\n회수율: ${budgetAll>0?Math.round(margin6m/budgetAll*100):0}%`);
+
+  // ── 판정 ──
+  const vbox = document.getElementById('verdict-box');
+  if(bep<=2){
+    vbox.className='verdict good';
+    vbox.innerHTML=`✅ <strong>${bep}개월 내 손익분기.</strong> 소스 마진만으로도 빠른 회수가 가능합니다. 파일럿 이후 즉시 확대를 검토하세요.`;
+  } else if(bep<=5){
+    vbox.className='verdict mid';
+    vbox.innerHTML=`⚠️ <strong>${bep}개월 내 손익분기.</strong> 적정 수준입니다. 물품 조건부 지원이나 CPC 단가 인하로 ROI를 더 개선할 수 있습니다.`;
+  } else {
+    vbox.className='verdict bad';
+    vbox.innerHTML=`❌ <strong>손익분기까지 ${bep}개월 이상.</strong> 소스 마진만으로 회수가 어렵습니다. 지원금 축소 또는 조건부 지원(소스 사용량 기준)을 검토하세요.`;
+  }
+
+  updateCharts(sauceBottles, stores, budgetAll, marginAll);
 }
 
-function updateCharts(support, margin) {
-  if (barChart) barChart.destroy();
-  barChart = new Chart(document.getElementById('chartBar'), {
-    type: 'bar',
-    data: {
-      labels: ['본사 지원금', '1개월 마진', '3개월 마진', '6개월 마진'],
-      datasets: [{ data: [Math.round(support), Math.round(margin), Math.round(margin*3), Math.round(margin*6)], backgroundColor: ['#ef9a9a','#a5d6a7','#a5d6a7','#a5d6a7'], borderRadius: 4 }]
+function updateCharts(bottles, stores, totalBudget, marginPerMonth){
+  const months=[1,2,3,4,5,6];
+  const baseline=5;
+
+  if(sauceChart) sauceChart.destroy();
+  sauceChart = new Chart(document.getElementById('chartSauce'),{
+    type:'bar',
+    data:{
+      labels:['기존 추정\n(광고 전)','광고 지원\n(매장 1개)','파일럿 전체\n('+stores+'개 합산)'],
+      datasets:[{
+        data:[baseline, baseline+bottles, (baseline+bottles)*stores],
+        backgroundColor:['#e0e0e0','#ffb74d','#ef6c00'],
+        borderRadius:5
+      }]
     },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        y: { ticks: { callback: v => (v/10000).toFixed(0)+'만', font:{size:11} }, grid:{color:'rgba(0,0,0,0.05)'} },
-        x: { ticks: { font:{size:11} }, grid:{display:false} }
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.raw.toFixed(1)}통/월`}}},
+      scales:{
+        y:{ticks:{callback:v=>v+'통',font:{size:11}},grid:{color:'rgba(0,0,0,0.05)'}},
+        x:{ticks:{font:{size:10}},grid:{display:false}}
       }
     }
   });
 
-  if (bepChart) bepChart.destroy();
-  const months = [1,2,3,4,5,6];
-  bepChart = new Chart(document.getElementById('chartBep'), {
-    type: 'line',
-    data: {
-      labels: months.map(m => m+'개월'),
-      datasets: [
-        { label: '누적 마진', data: months.map(m => Math.round(margin*m)), borderColor:'#43a047', backgroundColor:'rgba(67,160,71,0.1)', fill:true, tension:0.3, pointRadius:3 },
-        { label: '지원금', data: months.map(()=>Math.round(support)), borderColor:'#ef5350', borderDash:[4,4], pointRadius:0 }
+  if(bepChart) bepChart.destroy();
+  bepChart = new Chart(document.getElementById('chartBep'),{
+    type:'line',
+    data:{
+      labels:months.map(m=>m+'개월'),
+      datasets:[
+        {label:'누적 소스 마진',data:months.map(m=>Math.round(marginPerMonth*m)),borderColor:'#43a047',backgroundColor:'rgba(67,160,71,0.1)',fill:true,tension:.3,pointRadius:3},
+        {label:'총 지원금',data:months.map(()=>Math.round(totalBudget)),borderColor:'#ef5350',borderDash:[5,4],pointRadius:0}
       ]
     },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        y: { ticks: { callback: v => (v/10000).toFixed(0)+'만', font:{size:11} }, grid:{color:'rgba(0,0,0,0.05)'} },
-        x: { ticks: { font:{size:11} }, grid:{display:false} }
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'bottom',labels:{font:{size:11},boxWidth:14}}},
+      scales:{
+        y:{ticks:{callback:v=>(v/10000).toFixed(0)+'만',font:{size:11}},grid:{color:'rgba(0,0,0,0.05)'}},
+        x:{ticks:{font:{size:11}},grid:{display:false}}
       }
     }
   });

@@ -46,14 +46,14 @@ html, body { height: 100%; font-family: 'Malgun Gothic','Apple SD Gothic Neo',sa
 .mobile-view { display:none; }
 
 /* 개요 화면 */
-#m-overview { padding:20px 12px 12px; }
-.m-header { text-align:center; margin-bottom:14px; }
-.m-badge { display:inline-block; background:#8B5C2A; color:#fff; padding:5px 18px; border-radius:4px; font-size:12px; font-weight:700; letter-spacing:2px; margin-bottom:10px; }
-.m-counter-num { font-size:60px; font-weight:700; color:#3b1f0e; line-height:1; }
+#m-overview { padding:14px 12px 4px; }
+.m-header { text-align:center; margin-bottom:8px; }
+.m-badge { display:inline-block; background:#8B5C2A; color:#fff; padding:4px 16px; border-radius:4px; font-size:12px; font-weight:700; letter-spacing:2px; margin-bottom:6px; }
+.m-counter-num { font-size:48px; font-weight:700; color:#3b1f0e; line-height:1; }
 .m-counter-unit { font-size:18px; color:#8B5C2A; font-weight:600; margin-left:4px; }
 .m-sub { font-size:11px; color:#bbb; margin-top:4px; }
-.map-wrap { position:relative; width:100%; }
-#map-img { width:100%; height:auto; display:block; filter:hue-rotate(185deg) saturate(2.8) brightness(1.05); }
+.map-wrap { position:relative; width:100%; overflow:hidden; }
+#map-img { width:100%; height:auto; display:block; filter:hue-rotate(185deg) saturate(2.8) brightness(1.05); margin-bottom:-6%; }
 
 /* 버블: 원 + 아래 라벨 */
 .bubble-wrap {
@@ -77,7 +77,7 @@ html, body { height: 100%; font-family: 'Malgun Gothic','Apple SD Gothic Neo',sa
   border-radius:3px; white-space:nowrap;
   box-shadow:0 1px 3px rgba(0,0,0,0.15);
 }
-.m-hint { text-align:center; font-size:11px; color:#c8a97a; margin-top:8px; padding-bottom:4px; }
+.m-hint { text-align:center; font-size:11px; color:#c8a97a; margin-top:4px; padding-bottom:0; }
 
 /* 상세(지도) 화면 */
 #m-detail { display:none; flex-direction:column; height:100vh; }
@@ -255,7 +255,7 @@ var STORES=[], total=0;
 var selectedBubble=null;
 var mMap=null, mMarkers=[];
 
-function dotSize(n) { return n>=50?46:n>=30?40:n>=15?34:n>=8?28:n>=4?23:19; }
+function dotSize(n) { return 36; }
 
 // ── 모바일: 개요 ──
 function initMobile() {
@@ -279,7 +279,7 @@ function initMobile() {
         if(!cnt) return;
         var pos=REGION_POS[region]; if(!pos) return;
         var s=dotSize(cnt);
-        var fs=s>=40?14:s>=30?12:10;
+        var fs=13;
 
         var wrap2=document.createElement('div');
         wrap2.className='bubble-wrap';

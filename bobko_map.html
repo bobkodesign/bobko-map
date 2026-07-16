@@ -278,27 +278,15 @@ function initMobile() {
         }
         if(!cnt) return;
         var pos=REGION_POS[region]; if(!pos) return;
-        var s=dotSize(cnt);
-        var fs=13;
-
         var wrap2=document.createElement('div');
         wrap2.className='bubble-wrap';
         wrap2.style.left=pos[0]+'%';
         wrap2.style.top=pos[1]+'%';
 
-        var circle=document.createElement('div');
-        circle.className='bubble-circle';
-        circle.style.width=s+'px';
-        circle.style.height=s+'px';
-        circle.style.fontSize=fs+'px';
-        circle.textContent=cnt;
-
-        var label=document.createElement('div');
-        label.className='bubble-label';
-        label.textContent=region;
-
-        wrap2.appendChild(circle);
-        wrap2.appendChild(label);
+        var pill=document.createElement('div');
+        pill.className='bubble-pill';
+        pill.innerHTML='<span class="dn">'+region+'</span><span class="dc">'+cnt+'</span>';
+        wrap2.appendChild(pill);
 
         wrap2.addEventListener('click', function() {
           if(selectedBubble) selectedBubble.classList.remove('selected');

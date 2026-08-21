@@ -207,15 +207,16 @@ function processRows(rows){
   return stores;
 }
 function loadFromSheet(callback){
-  var cbName = 'gvizCb_' + Date.now();
   var timer = setTimeout(function(){
-    delete window[cbName];
     callback(new Error('timeout'), null);
   }, 12000);
 
-  window[cbName] = function(resp){
+  // gviz API는 google.visualization.Query.setResponse 를 호출함
+  window.google = window.google || {};
+  window.google.visualization = window.google.visualization || {};
+  window.google.visualization.Query = window.google.visualization.Query || {};
+  window.google.visualization.Query.setResponse = function(resp){
     clearTimeout(timer);
-    delete window[cbName];
     try {
       var table = resp.table;
       var stores = [];
@@ -233,11 +234,10 @@ function loadFromSheet(callback){
   };
 
   var s = document.createElement('script');
-  s.src = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:json&callback=' + cbName + '&gid=0';
+  s.src = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?gid=0&tq=select%20*';
   s.onerror = function(){
     clearTimeout(timer);
-    delete window[cbName];
-    callback(new Error('script error'), null);
+    callback(new Error('script load error'), null);
   };
   document.head.appendChild(s);
 }

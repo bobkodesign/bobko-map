@@ -39,8 +39,8 @@ html, body { height: 100%; font-family: 'Malgun Gothic','Apple SD Gothic Neo',sa
 .b두루치기{background:#ffebee;color:#c62828} .b기타{background:#f3f0ec;color:#5d4037}
 .no-result { padding:20px; text-align:center; color:#aaa; font-size:12px; line-height:1.6; }
 #pc-map { flex:1; }
-.mobile-view { display:none; }
-#m-overview { padding:18px 14px 0; }
+.mobile-view { display:none; min-height:100vh; background:#f5ede0; }
+#m-overview { padding:18px 14px 0; background:#f5ede0; }
 .m-header { text-align:center; margin-bottom:12px; }
 .m-badge { display:inline-block; background:#8B5C2A; color:#fff; padding:5px 18px; border-radius:4px; font-size:12px; font-weight:700; letter-spacing:2px; margin-bottom:8px; }
 .m-counter-num { font-size:56px; font-weight:700; color:#3b1f0e; line-height:1; }
@@ -56,7 +56,7 @@ html, body { height: 100%; font-family: 'Malgun Gothic','Apple SD Gothic Neo',sa
 .m-hint { text-align:center; font-size:11px; color:#c8a97a; padding:6px 0 0; }
 #sheet-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.3); z-index:100; }
 #sheet-overlay.open { display:block; }
-#bottom-sheet { position:fixed; bottom:0; left:0; right:0; z-index:101; background:#fff; border-radius:18px 18px 16px 16px; box-shadow:0 -4px 24px rgba(0,0,0,0.15); margin:0 8px 12px; transform:translateY(100%); transition:transform 0.3s cubic-bezier(0.32,0.72,0,1); max-height:55vh; display:flex; flex-direction:column; }
+#bottom-sheet { position:fixed; bottom:0; left:0; right:0; z-index:101; background:#fff; border-radius:18px 18px 16px 16px; box-shadow:0 -4px 24px rgba(0,0,0,0.15); margin:0 8px 12px; transform:translateY(100%); transition:transform 0.3s cubic-bezier(0.32,0.72,0,1); max-height:55vh; min-height:0; display:flex; flex-direction:column; }
 #bottom-sheet.open { transform:translateY(0); }
 .sheet-handle { width:32px; height:4px; background:#e0e0e0; border-radius:2px; margin:10px auto 0; flex-shrink:0; }
 .sheet-header { padding:10px 16px; border-bottom:1px solid #f0f0f0; flex-shrink:0; display:flex; align-items:center; justify-content:space-between; }

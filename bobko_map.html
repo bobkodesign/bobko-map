@@ -7,8 +7,6 @@
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; font-family: 'Malgun Gothic','Apple SD Gothic Neo',sans-serif; background:#fffdf8; }
-
-/* ── PC ── */
 .pc-view { display:flex; flex-direction:column; height:100vh; }
 .pc-header { padding:14px 20px 0; flex-shrink:0; }
 .pc-header h1 { font-size:22px; color:#3b1f0e; margin-bottom:4px; }
@@ -39,10 +37,8 @@ html, body { height: 100%; font-family: 'Malgun Gothic','Apple SD Gothic Neo',sa
 .sbrand { display:inline-block; font-size:10px; padding:2px 7px; border-radius:10px; margin-bottom:3px; font-weight:bold; }
 .b찜닭{background:#e8f5e9;color:#2e7d32} .b콩불{background:#fff8e1;color:#f57f17}
 .b두루치기{background:#ffebee;color:#c62828} .b기타{background:#f3f0ec;color:#5d4037}
-.no-result { padding:40px; text-align:center; color:#aaa; font-size:13px; }
+.no-result { padding:20px; text-align:center; color:#aaa; font-size:12px; line-height:1.6; }
 #pc-map { flex:1; }
-
-/* ── 모바일 ── */
 .mobile-view { display:none; }
 #m-overview { padding:18px 14px 0; }
 .m-header { text-align:center; margin-bottom:12px; }
@@ -52,24 +48,18 @@ html, body { height: 100%; font-family: 'Malgun Gothic','Apple SD Gothic Neo',sa
 .m-sub { font-size:11px; color:#bbb; margin-top:4px; }
 .map-wrap { position:relative; width:100%; overflow:hidden; }
 #map-img { width:100%; height:auto; display:block; filter:hue-rotate(185deg) saturate(2.8) brightness(1.05); margin-bottom:-5%; }
-
-/* 칩 뱃지 */
 .chip-wrap { position:absolute; transform:translate(-50%,-50%); cursor:pointer; z-index:10; }
 .chip-inner { display:inline-flex; align-items:center; gap:4px; background:#FF6B00; border:1.5px solid rgba(255,255,255,0.75); border-radius:14px; padding:3px 9px; font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif; font-size:11px; font-weight:700; color:white; white-space:nowrap; box-shadow:0 2px 8px rgba(0,0,0,0.25); transition:transform 0.15s, opacity 0.15s; }
 .chip-inner .cn { font-size:13px; font-weight:800; }
 .chip-wrap:hover .chip-inner { opacity:0.85; transform:scale(1.06); }
 .chip-wrap.active .chip-inner { background:#8B5C2A; box-shadow:0 0 0 3px rgba(139,92,42,0.35); }
 .m-hint { text-align:center; font-size:11px; color:#c8a97a; padding:6px 0 0; }
-
-/* 바텀시트 오버레이 */
 #sheet-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.3); z-index:100; }
 #sheet-overlay.open { display:block; }
-
-/* 바텀시트 */
 #bottom-sheet { position:fixed; bottom:0; left:0; right:0; z-index:101; background:#fff; border-radius:18px 18px 0 0; box-shadow:0 -4px 24px rgba(0,0,0,0.15); transform:translateY(100%); transition:transform 0.3s cubic-bezier(0.32,0.72,0,1); max-height:50vh; min-height:50vh; display:flex; flex-direction:column; }
 #bottom-sheet.open { transform:translateY(0); }
 .sheet-handle { width:32px; height:4px; background:#e0e0e0; border-radius:2px; margin:10px auto 0; flex-shrink:0; }
-.sheet-header { padding:10px 16px 10px; border-bottom:1px solid #f0f0f0; flex-shrink:0; display:flex; align-items:center; justify-content:space-between; }
+.sheet-header { padding:10px 16px; border-bottom:1px solid #f0f0f0; flex-shrink:0; display:flex; align-items:center; justify-content:space-between; }
 .sheet-title { font-size:15px; font-weight:700; color:#3b1f0e; }
 .sheet-count { font-size:12px; color:#8B5C2A; font-weight:500; }
 .sheet-close { background:none; border:none; font-size:18px; color:#bbb; cursor:pointer; padding:0 2px; line-height:1; }
@@ -79,14 +69,12 @@ html, body { height: 100%; font-family: 'Malgun Gothic','Apple SD Gothic Neo',sa
 .si-brand { display:inline-block; font-size:10px; padding:2px 7px; border-radius:10px; margin-bottom:4px; font-weight:700; }
 .si-name { font-size:13px; font-weight:700; color:#222; margin-bottom:2px; }
 .si-addr { font-size:11px; color:#999; line-height:1.4; }
-
 @media (max-width:768px) { .pc-view{display:none!important;} .mobile-view{display:block!important;} }
 @media (min-width:769px) { .mobile-view{display:none!important;} .pc-view{display:flex!important;} }
 </style>
 </head>
 <body>
 
-<!-- PC -->
 <div class="pc-view">
   <div class="pc-header">
     <h1>매장안내</h1>
@@ -113,7 +101,6 @@ html, body { height: 100%; font-family: 'Malgun Gothic','Apple SD Gothic Neo',sa
   </div>
 </div>
 
-<!-- 모바일 -->
 <div class="mobile-view">
   <div id="m-overview">
     <div class="m-header">
@@ -128,10 +115,7 @@ html, body { height: 100%; font-family: 'Malgun Gothic','Apple SD Gothic Neo',sa
   </div>
 </div>
 
-<!-- 바텀시트 오버레이 -->
 <div id="sheet-overlay" onclick="closeSheet()"></div>
-
-<!-- 바텀시트 -->
 <div id="bottom-sheet">
   <div class="sheet-handle"></div>
   <div class="sheet-header">
@@ -146,8 +130,45 @@ html, body { height: 100%; font-family: 'Malgun Gothic','Apple SD Gothic Neo',sa
 
 <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=hvtb0pwl1l&submodules=geocoder"></script>
 <script>
-var SHEET_ID =  + SHEET_ID + ;
+var SHEET_ID = '1JHE-Pa33uYD_-f3Yckh3zoA42AZOqRoZI6XnYjjHQEk';
+/* ── 구글 시트 데이터 로드 (gviz JSONP) ── */
+function loadFromSheet(callback) {
+  var timer = setTimeout(function() {
+    callback(new Error('timeout'), null);
+  }, 12000);
 
+  window.google = window.google || {};
+  window.google.visualization = window.google.visualization || {};
+  window.google.visualization.Query = window.google.visualization.Query || {};
+  window.google.visualization.Query.setResponse = function(resp) {
+    clearTimeout(timer);
+    try {
+      var table = resp.table;
+      var stores = [];
+      for (var i = 0; i < table.rows.length; i++) {
+        var c = table.rows[i].c;
+        var name    = c[0] && c[0].v ? String(c[0].v).trim() : '';
+        var brand   = c[1] && c[1].v ? String(c[1].v).trim() : '';
+        var address = c[2] && c[2].v ? String(c[2].v).trim() : '';
+        var sido    = c[3] && c[3].v ? normSido(String(c[3].v).trim()) : '';
+        var sigungu = c[4] && c[4].v ? String(c[4].v).trim() : '';
+        if (name && address) {
+          stores.push({name:name, brand:brand, address:address, sido:sido, sigungu:sigungu});
+        }
+      }
+      if (stores.length === 0) throw new Error('empty');
+      callback(null, stores);
+    } catch(e) { callback(e, null); }
+  };
+
+  var s = document.createElement('script');
+  s.src = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?gid=0&tq=select%20*';
+  s.onerror = function() {
+    clearTimeout(timer);
+    callback(new Error('gviz load error'), null);
+  };
+  document.head.appendChild(s);
+}
 
 var REGION_GROUPS = {
   '경기/인천': ['경기','인천'], '서울': ['서울'], '강원도': ['강원'],
@@ -162,134 +183,80 @@ var REGION_POS = {
   '대구': [55,54], '전라도': [26,65], '광주': [27,72],
   '부산': [67,67], '제주': [31,93]
 };
+var REGION_MAP_CENTER = {
+  '경기/인천': {lat:37.50,lng:126.80,zoom:10},
+  '서울':      {lat:37.56,lng:127.00,zoom:12},
+  '강원도':    {lat:37.80,lng:128.20,zoom:9},
+  '충청도':    {lat:36.55,lng:127.10,zoom:9},
+  '대전':      {lat:36.35,lng:127.38,zoom:12},
+  '경상도':    {lat:35.90,lng:128.60,zoom:9},
+  '대구':      {lat:35.87,lng:128.60,zoom:12},
+  '전라도':    {lat:35.30,lng:127.10,zoom:9},
+  '광주':      {lat:35.16,lng:126.85,zoom:12},
+  '부산':      {lat:35.18,lng:129.07,zoom:12},
+  '제주':      {lat:33.49,lng:126.53,zoom:11}
+};
 var SIDO_NORM = {
   '서울특별시':'서울','부산광역시':'부산','대구광역시':'대구','인천광역시':'인천',
   '광주광역시':'광주','대전광역시':'대전','울산광역시':'울산','세종특별자치시':'세종'
 };
-function normSido(s){ return SIDO_NORM[s]||s; }
-function brandClass(b){
+function normSido(s) { return SIDO_NORM[s]||s; }
+function brandClass(b) {
   if(b.indexOf('찜닭')>=0) return '찜닭';
   if(b.indexOf('콩불')>=0) return '콩불';
   if(b.indexOf('두루치기')>=0) return '두루치기';
   return '기타';
 }
-function calcDist(a,b,c,d){
+function calcDist(a,b,c,d) {
   var R=6371,dLat=(c-a)*Math.PI/180,dLng=(d-b)*Math.PI/180;
   var x=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);
   return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));
 }
-function fmtDist(km){ return km<1?Math.round(km*1000)+'m':km.toFixed(1)+'km'; }
+function fmtDist(km) { return km<1?Math.round(km*1000)+'m':km.toFixed(1)+'km'; }
 
-function parseCSV(text){
-  var rows=[],lines=text.split('
-');
-  for(var i=0;i<lines.length;i++){
-    var line=lines[i].trim(); if(!line) continue;
-    var cols=[],cur='',inQ=false;
-    for(var j=0;j<line.length;j++){
-      var ch=line[j];
-      if(ch==='"'){inQ=!inQ;} else if(ch===','&&!inQ){cols.push(cur.trim());cur='';} else{cur+=ch;}
-    }
-    cols.push(cur.trim()); rows.push(cols);
-  }
-  return rows;
-}
-function processRows(rows){
-  var stores=[];
-  for(var i=1;i<rows.length;i++){
-    var row=rows[i];
-    var name=(row[0]||'').trim(),brand=(row[1]||'').trim();
-    var address=(row[2]||'').trim(),sido=normSido((row[3]||'').trim());
-    var sigungu=(row[4]||'').trim();
-    if(!name||!address) continue;
-    stores.push({name:name,brand:brand,address:address,sido:sido,sigungu:sigungu});
-  }
-  return stores;
-}
-function loadFromSheet(callback){
-  var timer = setTimeout(function(){
-    callback(new Error('timeout'), null);
-  }, 12000);
+var STORES=[], total=0, activeChip=null;
 
-  // gviz API는 google.visualization.Query.setResponse 를 호출함
-  window.google = window.google || {};
-  window.google.visualization = window.google.visualization || {};
-  window.google.visualization.Query = window.google.visualization.Query || {};
-  window.google.visualization.Query.setResponse = function(resp){
-    clearTimeout(timer);
-    try {
-      var table = resp.table;
-      var stores = [];
-      for(var i=0; i<table.rows.length; i++){
-        var c = table.rows[i].c;
-        var name    = c[0]&&c[0].v ? String(c[0].v).trim() : '';
-        var brand   = c[1]&&c[1].v ? String(c[1].v).trim() : '';
-        var address = c[2]&&c[2].v ? String(c[2].v).trim() : '';
-        var sido    = c[3]&&c[3].v ? normSido(String(c[3].v).trim()) : '';
-        var sigungu = c[4]&&c[4].v ? String(c[4].v).trim() : '';
-        if(name && address) stores.push({name:name,brand:brand,address:address,sido:sido,sigungu:sigungu});
-      }
-      callback(null, stores);
-    } catch(e){ callback(e, null); }
-  };
-
-  var s = document.createElement('script');
-  s.src = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?gid=0&tq=select%20*';
-  s.onerror = function(){
-    clearTimeout(timer);
-    callback(new Error('script load error'), null);
-  };
-  document.head.appendChild(s);
-}
-
-var STORES=[],total=0;
-var activeChip=null;
-
-/* ── 바텀시트 ── */
-function openSheet(region,sidos){
+function openSheet(region, sidos) {
   var stores=[];
   for(var i=0;i<STORES.length;i++){
-    var s=STORES[i];
     for(var j=0;j<sidos.length;j++){
-      if(s.sido===sidos[j]){stores.push(s);break;}
+      if(STORES[i].sido===sidos[j]){stores.push(STORES[i]);break;}
     }
   }
-  document.getElementById('sheet-title').textContent=region;
-  document.getElementById('sheet-count').textContent=stores.length+'개 매장';
+  document.getElementById('sheet-title').textContent = region;
+  document.getElementById('sheet-count').textContent = stores.length+'개 매장';
   var html='';
   for(var i=0;i<stores.length;i++){
     var s=stores[i];
     html+='<div class="sheet-item">'
-        +'<div class="si-brand b'+brandClass(s.brand)+' sbrand">'+s.brand+'</div>'
+        +'<div class="si-brand sbrand b'+brandClass(s.brand)+'">'+s.brand+'</div>'
         +'<div class="si-name">'+s.name+'</div>'
         +'<div class="si-addr">'+s.address+'</div>'
         +'</div>';
   }
-  document.getElementById('sheet-list').innerHTML=html;
-  document.getElementById('sheet-list').scrollTop=0;
+  document.getElementById('sheet-list').innerHTML = html;
+  document.getElementById('sheet-list').scrollTop = 0;
   document.getElementById('sheet-overlay').classList.add('open');
   document.getElementById('bottom-sheet').classList.add('open');
 }
-function closeSheet(){
+function closeSheet() {
   document.getElementById('sheet-overlay').classList.remove('open');
   document.getElementById('bottom-sheet').classList.remove('open');
   if(activeChip){activeChip.classList.remove('active');activeChip=null;}
 }
 
-/* ── 모바일 초기화 ── */
-function initMobile(){
-  var el=document.getElementById('m-counter'),cur=0;
+function initMobile() {
+  var el=document.getElementById('m-counter'), cur=0;
   var t=setInterval(function(){cur=Math.min(cur+3,total);el.textContent=cur;if(cur>=total)clearInterval(t);},20);
 
-  function addChips(){
+  function addChips() {
     var wrap=document.getElementById('map-wrap');
     var old=wrap.querySelectorAll('.chip-wrap');
     for(var i=0;i<old.length;i++) old[i].remove();
-
     var keys=Object.keys(REGION_GROUPS);
     for(var i=0;i<keys.length;i++){
       (function(region){
-        var sidos=REGION_GROUPS[region],cnt=0;
+        var sidos=REGION_GROUPS[region], cnt=0;
         for(var j=0;j<STORES.length;j++){
           for(var k=0;k<sidos.length;k++){
             if(STORES[j].sido===sidos[k]){cnt++;break;}
@@ -297,16 +264,13 @@ function initMobile(){
         }
         if(!cnt) return;
         var pos=REGION_POS[region]; if(!pos) return;
-
         var wrap2=document.createElement('div');
         wrap2.className='chip-wrap';
         wrap2.style.left=pos[0]+'%';
         wrap2.style.top=pos[1]+'%';
-
         var inner=document.createElement('div');
         inner.className='chip-inner';
         inner.innerHTML=region+' <span class="cn">'+cnt+'</span>';
-
         wrap2.appendChild(inner);
         wrap2.addEventListener('click',function(){
           if(activeChip) activeChip.classList.remove('active');
@@ -318,18 +282,16 @@ function initMobile(){
       })(keys[i]);
     }
   }
-
   var img=document.getElementById('map-img');
   if(img.complete) addChips(); else img.addEventListener('load',addChips);
 }
 
-/* ── PC ── */
 var UNJUNG={lat:37.7074,lng:126.7491};
 var map,markers=[],activeIdx=-1,filteredStores=[],selectedBrand='';
 var userLat=null,userLng=null,userMarker=null,storeCoords=[];
 var BRAND_COLORS={'밥꼬찜닭':'#2e7d32','밥꼬콩불':'#f57f17','먹짱국물두루치기':'#c62828','기타':'#8B5C2A'};
 
-function initPC(){
+function initPC() {
   var sidos=[],seen={};
   for(var i=0;i<STORES.length;i++){var s=STORES[i].sido;if(s&&!seen[s]){seen[s]=1;sidos.push(s);}}
   sidos.sort();
@@ -339,12 +301,14 @@ function initPC(){
   filteredStores=STORES.slice();
   if(navigator.geolocation){
     navigator.geolocation.getCurrentPosition(
-      function(pos){userLat=pos.coords.latitude;userLng=pos.coords.longitude;initPCMap(userLat,userLng,14);showUserMarker();loadPC(true);},
+      function(p){userLat=p.coords.latitude;userLng=p.coords.longitude;initPCMap(userLat,userLng,14);showUserMarker();loadPC(true);},
       function(){initPCMap(UNJUNG.lat,UNJUNG.lng,15);loadPC(false);},{timeout:5000}
     );
   } else {initPCMap(UNJUNG.lat,UNJUNG.lng,15);loadPC(false);}
 }
-function initPCMap(lat,lng,zoom){map=new naver.maps.Map('pc-map',{center:new naver.maps.LatLng(lat,lng),zoom:zoom});}
+function initPCMap(lat,lng,zoom){
+  map=new naver.maps.Map('pc-map',{center:new naver.maps.LatLng(lat,lng),zoom:zoom});
+}
 function showUserMarker(){
   if(userMarker)userMarker.setMap(null);
   userMarker=new naver.maps.Marker({position:new naver.maps.LatLng(userLat,userLng),map:map,
@@ -354,29 +318,27 @@ function geocodeAll(stores,byDist){
   for(var i=0;i<markers.length;i++){if(markers[i])markers[i].setMap(null);}
   markers=new Array(stores.length);storeCoords=new Array(stores.length);
   var done=0;
-  (function(stores){
-    for(var i=0;i<stores.length;i++){
-      (function(s,idx){
-        naver.maps.Service.geocode({query:s.address},function(status,res){
-          done++;
-          if(status===naver.maps.Service.Status.OK&&res.v2.addresses[0]){
-            var it=res.v2.addresses[0],lat=parseFloat(it.y),lng=parseFloat(it.x);
-            storeCoords[idx]={lat:lat,lng:lng};
-            var color=BRAND_COLORS[s.brand]||'#8B5C2A';
-            var sn=s.name.replace('밥꼬찜닭 ','').replace('밥꼬콩불 ','').replace('먹짱국물두루치기 ','');
-            var mk=new naver.maps.Marker({position:new naver.maps.LatLng(lat,lng),map:map,title:s.name,
-              icon:{content:'<div style="background:'+color+';color:#fff;padding:3px 7px;border-radius:4px;font-size:11px;font-weight:bold;white-space:nowrap;box-shadow:0 2px 4px rgba(0,0,0,0.3);">'+sn+'</div>',anchor:new naver.maps.Point(0,18)}});
-            (function(midx){naver.maps.Event.addListener(mk,'click',function(){selectByOrig(midx);});})(idx);
-            markers[idx]=mk;
-          }
-          if(done===stores.length){
-            if(byDist&&userLat!==null)renderListDist(stores);else renderList(stores);
-            if(byDist&&userLat!==null)focusNearest(stores);
-          }
-        });
-      })(stores[i],i);
-    }
-  })(stores);
+  for(var i=0;i<stores.length;i++){
+    (function(s,idx){
+      naver.maps.Service.geocode({query:s.address},function(status,res){
+        done++;
+        if(status===naver.maps.Service.Status.OK&&res.v2.addresses[0]){
+          var it=res.v2.addresses[0],lat=parseFloat(it.y),lng=parseFloat(it.x);
+          storeCoords[idx]={lat:lat,lng:lng};
+          var color=BRAND_COLORS[s.brand]||'#8B5C2A';
+          var sn=s.name.replace('밥꼬찜닭 ','').replace('밥꼬콩불 ','').replace('먹짱국물두루치기 ','');
+          var mk=new naver.maps.Marker({position:new naver.maps.LatLng(lat,lng),map:map,title:s.name,
+            icon:{content:'<div style="background:'+color+';color:#fff;padding:3px 7px;border-radius:4px;font-size:11px;font-weight:bold;white-space:nowrap;box-shadow:0 2px 4px rgba(0,0,0,0.3);">'+sn+'</div>',anchor:new naver.maps.Point(0,18)}});
+          (function(midx){naver.maps.Event.addListener(mk,'click',function(){selectByOrig(midx);});})(idx);
+          markers[idx]=mk;
+        }
+        if(done===stores.length){
+          if(byDist&&userLat!==null)renderListDist(stores);else renderList(stores);
+          if(byDist&&userLat!==null)focusNearest(stores);
+        }
+      });
+    })(stores[i],i);
+  }
 }
 function loadPC(byDist){geocodeAll(filteredStores,byDist);}
 function renderList(stores){
@@ -394,8 +356,8 @@ function renderList(stores){
 function renderListDist(stores){
   var wd=[];
   for(var i=0;i<stores.length;i++){
-    var dist=storeCoords[i]?calcDist(userLat,userLng,storeCoords[i].lat,storeCoords[i].lng):99999;
-    wd.push({s:stores[i],origIdx:i,dist:dist});
+    var d=storeCoords[i]?calcDist(userLat,userLng,storeCoords[i].lat,storeCoords[i].lng):99999;
+    wd.push({s:stores[i],origIdx:i,dist:d});
   }
   wd.sort(function(a,b){return a.dist-b.dist;});
   document.getElementById('list-header').textContent='가까운 순 '+wd.length+'개 매장';
@@ -464,23 +426,24 @@ function search(){
   activeIdx=-1;geocodeAll(filteredStores,userLat!==null);
 }
 
-/* ── 메인 ── */
 window.addEventListener('load',function(){
   var isMobile=window.innerWidth<=768;
   loadFromSheet(function(err,stores){
     if(err||!stores||!stores.length){
+      var msg='데이터를 불러오지 못했습니다. ('+( err?err.message:'empty')+')<br>구글 시트 공유 설정을 확인해 주세요.';
       if(!isMobile){
         document.getElementById('list-header').textContent='데이터 로드 실패';
-        document.getElementById('store-list').innerHTML='<div class="no-result">구글 시트 공유 설정을 확인해 주세요.</div>';
+        document.getElementById('store-list').innerHTML='<div class="no-result">'+msg+'</div>';
       } else {
         document.getElementById('m-counter').textContent='?';
       }
       return;
     }
-    STORES=stores;total=stores.length;
+    STORES=stores; total=stores.length;
     if(isMobile) initMobile(); else initPC();
   });
 });
+
 </script>
 </body>
 </html>

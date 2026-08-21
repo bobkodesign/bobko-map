@@ -69,7 +69,11 @@ html, body { height: 100%; font-family: 'Malgun Gothic','Apple SD Gothic Neo',sa
 .si-brand { display:inline-block; font-size:10px; padding:2px 7px; border-radius:10px; margin-bottom:4px; font-weight:700; }
 .si-name { font-size:13px; font-weight:700; color:#222; margin-bottom:2px; }
 .si-addr { font-size:11px; color:#999; line-height:1.4; }
-@media (max-width:768px) { .pc-view{display:none!important;} .mobile-view{display:block!important;} }
+@media (max-width:768px) {
+  .pc-view{display:none!important;} .mobile-view{display:block!important;}
+  .map-wrap { overflow:hidden; }
+  #map-img { height:400px; object-fit:cover; object-position:center; }
+}
 @media (min-width:769px) { .mobile-view{display:none!important;} .pc-view{display:flex!important;} }
 </style>
 </head>
@@ -177,10 +181,10 @@ var REGION_GROUPS = {
   '부산': ['부산'], '제주': ['제주']
 };
 var REGION_POS = {
-  '경기/인천': [20,32], '서울': [38,22], '강원도': [64,18],
-  '충청도': [27,41], '대전': [45,51], '경상도': [67,43],
-  '대구': [56,55], '전라도': [16,63], '광주': [22,74],
-  '부산': [71,68], '제주': [30,92]
+  '경기/인천': [20,32], '서울': [28,26], '강원도': [60,22],
+  '충청도': [23,43], '대전': [37,50], '경상도': [65,46],
+  '대구': [55,55], '전라도': [14,64], '광주': [19,72],
+  '부산': [71,68], '제주': [24,92]
 };
 var REGION_MAP_CENTER = {
   '경기/인천': {lat:37.50,lng:126.80,zoom:10},

@@ -147,10 +147,7 @@ html, body { height: 100%; font-family: 'Malgun Gothic','Apple SD Gothic Neo',sa
 <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=hvtb0pwl1l&submodules=geocoder"></script>
 <script>
 var SHEET_ID =  + SHEET_ID + ;
-var CSV_URLS = [
-  'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:csv&gid=0',
-  'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/export?format=csv&gid=0'
-];
+
 
 var REGION_GROUPS = {
   '경기/인천': ['경기','인천'], '서울': ['서울'], '강원도': ['강원'],
@@ -210,24 +207,39 @@ function processRows(rows){
   return stores;
 }
 function loadFromSheet(callback){
-  function tryUrl(idx){
-    if(idx >= CSV_URLS.length){ callback(new Error('all failed'), null); return; }
-    fetch(CSV_URLS[idx])
-      .then(function(r){
-        if(!r.ok) throw new Error('HTTP '+r.status);
-        return r.text();
-      })
-      .then(function(t){
-        var stores = processRows(parseCSV(t));
-        if(stores.length === 0) throw new Error('empty');
-        callback(null, stores);
-      })
-      .catch(function(e){
-        console.warn('URL '+idx+' 실패:', e);
-        tryUrl(idx+1);
-      });
-  }
-  tryUrl(0);
+  var cbName = 'gvizCb_' + Date.now();
+  var timer = setTimeout(function(){
+    delete window[cbName];
+    callback(new Error('timeout'), null);
+  }, 12000);
+
+  window[cbName] = function(resp){
+    clearTimeout(timer);
+    delete window[cbName];
+    try {
+      var table = resp.table;
+      var stores = [];
+      for(var i=0; i<table.rows.length; i++){
+        var c = table.rows[i].c;
+        var name    = c[0]&&c[0].v ? String(c[0].v).trim() : '';
+        var brand   = c[1]&&c[1].v ? String(c[1].v).trim() : '';
+        var address = c[2]&&c[2].v ? String(c[2].v).trim() : '';
+        var sido    = c[3]&&c[3].v ? normSido(String(c[3].v).trim()) : '';
+        var sigungu = c[4]&&c[4].v ? String(c[4].v).trim() : '';
+        if(name && address) stores.push({name:name,brand:brand,address:address,sido:sido,sigungu:sigungu});
+      }
+      callback(null, stores);
+    } catch(e){ callback(e, null); }
+  };
+
+  var s = document.createElement('script');
+  s.src = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:json&callback=' + cbName + '&gid=0';
+  s.onerror = function(){
+    clearTimeout(timer);
+    delete window[cbName];
+    callback(new Error('script error'), null);
+  };
+  document.head.appendChild(s);
 }
 
 var STORES=[],total=0;

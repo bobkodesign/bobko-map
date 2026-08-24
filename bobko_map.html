@@ -289,7 +289,7 @@ function initMobile() {
   if(img.complete) addChips(); else img.addEventListener('load',addChips);
 }
 
-var UNJUNG={lat:37.7074,lng:126.7491};
+var UNJUNG={lat:36.2, lng:127.9};
 var map,markers=[],activeIdx=-1,filteredStores=[],selectedBrand='';
 var userLat=null,userLng=null,userMarker=null,storeCoords=[];
 var BRAND_COLORS={'밥꼬찜닭':'#2e7d32','밥꼬콩불':'#f57f17','먹짱국물두루치기':'#c62828','기타':'#8B5C2A'};
@@ -305,9 +305,9 @@ function initPC() {
   if(navigator.geolocation){
     navigator.geolocation.getCurrentPosition(
       function(p){userLat=p.coords.latitude;userLng=p.coords.longitude;initPCMap(userLat,userLng,14);showUserMarker();loadPC(true);},
-      function(){initPCMap(UNJUNG.lat,UNJUNG.lng,15);loadPC(false);},{timeout:5000}
+      function(){initPCMap(UNJUNG.lat,UNJUNG.lng,7);loadPC(false);},{timeout:5000}
     );
-  } else {initPCMap(UNJUNG.lat,UNJUNG.lng,15);loadPC(false);}
+  } else {initPCMap(UNJUNG.lat,UNJUNG.lng,7);loadPC(false);}
 }
 function initPCMap(lat,lng,zoom){
   map=new naver.maps.Map('pc-map',{center:new naver.maps.LatLng(lat,lng),zoom:zoom});

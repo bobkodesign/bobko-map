@@ -155,6 +155,9 @@ function loadFromSheet(callback) {
         var address = c[2] && c[2].v ? String(c[2].v).trim() : '';
         var sido    = c[3] && c[3].v ? normSido(String(c[3].v).trim()) : '';
         var sigungu = c[4] && c[4].v ? String(c[4].v).trim() : '';
+        // 헤더 행 스킵
+        var skipWords = ['name','brand','address','매장명','브랜드','주소','sido','sigungu','시도'];
+        if (skipWords.indexOf(name) >= 0 || skipWords.indexOf(brand) >= 0) continue;
         if (name && address) {
           stores.push({name:name, brand:brand, address:address, sido:sido, sigungu:sigungu});
         }
